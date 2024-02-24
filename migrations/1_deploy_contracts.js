@@ -1,8 +1,9 @@
 const ConvertLib = artifacts.require("ConvertLib");
-const MetaCoin = artifacts.require("MetaCoin");
+const PrivCA = artifacts.require("PrivCA");
+const owned = artifacts.require("owned");
 
 module.exports = function(deployer) {
-  deployer.deploy(ConvertLib);
-  deployer.link(ConvertLib, MetaCoin);
-  deployer.deploy(MetaCoin);
+  deployer.deploy(owned);
+  deployer.link(owned, PrivCA);
+  deployer.deploy(PrivCA);
 };
