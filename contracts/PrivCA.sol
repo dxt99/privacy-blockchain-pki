@@ -8,10 +8,12 @@ import "./owned.sol";
 // coin/token contracts.
 
 contract PrivCA is Owned {
-	Certificate[] private certificates;
+	mapping (uint => Transaction) private transactions;
+	mapping (uint => bool) private revocations;
 
-	struct Certificate {
-        string domain;
+	struct Transaction {
+		string operation;
+		string identity;
         string publicKey;
     }
 
@@ -19,13 +21,16 @@ contract PrivCA is Owned {
 		owner = msg.sender;
 	}
 
-	function registerCert(string memory domain, string memory publicKey) public onlyOwner returns(uint newId){
-		Certificate memory cert = Certificate(domain, publicKey);
-		certificates.push(cert);
-		newId = certificates.length - 1;
+	function register(uint id, string memory domain, string memory publicKey) public onlyOwner returns(bool){
+		if (bytes(transactions[id].operation).length != 0) return false;
+		
+		Transaction memory tr = Transaction("register", domain, publicKey);
+		transactions[id] = tr;
+
+		return true;
 	}
 
-	function getCert(uint id) public view returns(Certificate memory){
-		return certificates[id];
+	function get(uint id) public view returns(Transaction memory){
+		return transactions[id];
 	}
 }

@@ -3,15 +3,23 @@ const PrivCA = artifacts.require("PrivCA");
 contract('PrivCA', (accounts) => {
   it('should register sucessfully', async () => {
     const privCaInstance = await PrivCA.deployed();
-    const id = await privCaInstance.registerCert.call("b", "c");
+    const result = await privCaInstance.register.call(2, "b", "c");
     
-    assert.equal(id , 0);
+    assert.equal(result , true);
+  });
+
+  it('should fail registration with same id', async () => {
+    const privCaInstance = await PrivCA.deployed();
+    await privCaInstance.register.sendTransaction(2, "b", "c");
+    const result = await privCaInstance.register.call(2, "d", "e");
+    
+    assert.equal(result , false);
   });
 
   it('should throw if sender is not owner', async () => {
     const privCaInstance = await PrivCA.deployed();
     try {
-      await privCaInstance.registerCert.call("b", "c", {from: accounts[1]})
+      await privCaInstance.register.call(2, "b", "c", {from: accounts[1]})
       assert.fail("The transaction should have thrown an error");
     }
     catch (err) {
@@ -19,11 +27,10 @@ contract('PrivCA', (accounts) => {
     }
   });
 
-  it('should return proper certificate', async() => {
+  it('should return proper transaction', async() => {
     const privCaInstance = await PrivCA.deployed();
-    await privCaInstance.registerCert.sendTransaction("b", "c");
-    const cert = await privCaInstance.getCert.call(0);
-    assert.equal(cert.domain, "b");
-    console.log(cert);
+    await privCaInstance.register.sendTransaction(3, "b", "c");
+    const tr = await privCaInstance.get.call(3);
+    assert.equal(tr.operation, "register");
   })
 });
