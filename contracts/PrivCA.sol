@@ -8,29 +8,46 @@ import "./owned.sol";
 // coin/token contracts.
 
 contract PrivCA is Owned {
-	mapping (uint => Transaction) private transactions;
+	Transaction[] private transactions;
 	mapping (uint => bool) private revocations;
 
 	struct Transaction {
 		string operation;
 		string identity;
         string publicKey;
+		// add more props later
     }
 
 	constructor() {
 		owner = msg.sender;
 	}
 
-	function register(uint id, string memory domain, string memory publicKey) public onlyOwner returns(bool){
-		if (bytes(transactions[id].operation).length != 0) return false;
-		
+	// CA validates identity and verifies registration, then calls register
+	function register(string memory domain, string memory publicKey) public onlyOwner returns(uint){
 		Transaction memory tr = Transaction("register", domain, publicKey);
-		transactions[id] = tr;
+		transactions.push(tr);
 
-		return true;
+		return transactions.length - 1;
 	}
 
+	// Anyone can post updates, this will be used in certificate verification
+	function update(string memory publicKey) public returns(uint){
+		// add more pushed info later
+		Transaction memory tr = Transaction("update", "", publicKey);
+		transactions.push(tr);
+
+		return transactions.length - 1;
+	}
+
+	// CA can revoke certain transactions, users can request CA to revoke
+	function revoke(uint id) public onlyOwner returns(bool){
+		if (id >= transactions.length) return false;
+		revocations[id] = true;
+		return true;
+	} 
+
 	function get(uint id) public view returns(Transaction memory){
+		if (revocations[id]) return Transaction("revoked", "", "");
 		return transactions[id];
 	}
 }
