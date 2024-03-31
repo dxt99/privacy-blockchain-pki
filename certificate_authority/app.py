@@ -1,4 +1,5 @@
 import datetime
+import eth
 from flask import Flask
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
@@ -8,6 +9,7 @@ from cryptography.hazmat.primitives.serialization import Encoding
 
 app = Flask(__name__)
 
+data = []
 
 one_day = datetime.timedelta(1, 0, 0)
 private_key = rsa.generate_private_key(
@@ -16,8 +18,12 @@ private_key = rsa.generate_private_key(
 )
 public_key = private_key.public_key()
 
-@app.route("/")
-def hello_world():
+@app.route("/api/csr")
+def csr_handler():
+    pass
+
+@app.route("/x509/csr")
+def x509_csr_handler():
     builder = x509.CertificateBuilder()
     builder = builder.subject_name(x509.Name([
     x509.NameAttribute(NameOID.COMMON_NAME, 'cryptography.io'),

@@ -36,8 +36,17 @@ function EndSegment {
     Write-Host "--------------------------"
 }
 
-# Check Dependencies
+# Check and install Dependencies
 PrintSegment "Dependecy Check"
+if (Get-Command "py" -errorAction SilentlyContinue){
+    PrintSuccess "Python found"
+    Write-Host "Installing python dependencies"
+    py -m pip install -r "certificate_authority/requirements.txt" | out-null
+    Write-Host "Finished installing python dependencies"
+} else {
+    PrintError "Error: Python is missing"
+}
+
 if (Get-Command "truffle" -errorAction SilentlyContinue){
     PrintSuccess "Truffle found"
 } else {
@@ -48,6 +57,22 @@ if (Get-Command "docker" -errorAction SilentlyContinue){
     PrintSuccess "Docker found"
 } else {
     PrintError "Error: Docker is missing"
+}
+EndSegment
+
+# Check manual configs
+PrintSegment "Configs"
+Write-Host "Checking truffle config"
+if ([System.IO.File]::Exists("smart_contract/truffle-config.js")){
+    PrintSuccess "Truffle config found"
+} else {
+    PrintError "ERROR: Truffle config not found"
+}
+Write-Host "Checking CA config"
+if ([System.IO.File]::Exists("certificate_authority/config/account.json")){
+    PrintSuccess "CA account config found"
+} else {
+    PrintError "ERROR: CA account config not found"
 }
 EndSegment
 
@@ -87,15 +112,5 @@ if (${no-deploy}){
     New-Item -ItemType Directory -Force -Path certificate_authority/smart_contract/ | out-null
     Copy-Item smart_contract/build/contracts/PrivCA.json certificate_authority/config/contracts/PrivCA.json | out-null
     PrintSuccess "CA Setup done"
-}
-EndSegment
-
-# Check manual configs
-PrintSegment "Configs"
-Write-Host "Checking CA config"
-if ([System.IO.File]::Exists("certificate_authority/config/account.json")){
-    PrintSuccess "CA account config exists"
-} else {
-    PrintError "ERROR: CA account config missing"
 }
 EndSegment
