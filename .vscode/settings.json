@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "openapi:v3": "file:///d%3A/Github/privacy-blockchain-pki/certificate_authority/openapi.yaml"
+    }
+}

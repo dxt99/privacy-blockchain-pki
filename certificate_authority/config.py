@@ -1,11 +1,17 @@
 import json
 from web3 import Web3
+from dataclasses import dataclass
 
 # DB file
 sqlite_db_file = "db/certtificate_authority.db"
 
 # CA smart contract
+@dataclass
 class SmartContract:
+    ca_abi: str
+    ca_address: str
+    eth_contract: any
+    
     def __init__(self, chain: Web3):
         buffer = open("config/contracts/PrivCA.json").read()
         ca_json = json.loads(buffer)
@@ -15,7 +21,11 @@ class SmartContract:
         
 
 # CA smart contract account
+@dataclass
 class AdminAccount:
+    account_address: str
+    account_key: str
+    
     def __init__(self):
         buffer = open("config/account.json").read()
         account_json = json.loads(buffer)
@@ -23,7 +33,12 @@ class AdminAccount:
         self.account_key = account_json["key"]
 
 # Web3 chain connection
+@dataclass
 class ChainConnection:
+    admin: AdminAccount
+    eth_chain: Web3
+    contract: SmartContract
+    
     def __init__(self):
         eth_address = 'http://127.0.0.1:7545'
         self.admin = AdminAccount()

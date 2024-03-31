@@ -1,0 +1,46 @@
+openapi: '3.0.0'
+info:
+  title: Privacy aware log based PKI API
+  version: '1'
+  description: Just trying things out
+
+servers:
+  - url: http://localhost:8080
+    description: Local sandbox
+
+paths:
+  /register:
+    post:
+      summary: Return secret string
+      operationId: app.register_transaction_handler
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterTransaction'
+      responses:
+        '200':
+          description: status
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  your_name:
+                    type: string
+
+
+components:
+  schemas:
+    RegisterTransaction:
+      type: object
+      properties:
+        identity:
+          type: string
+        public_key:
+          type: string
+        signatures:
+          type: string

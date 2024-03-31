@@ -1,2 +1,3 @@
 cryptography
-Flask
+dataclasses
+connexion[swagger-ui,uvicorn,flask]

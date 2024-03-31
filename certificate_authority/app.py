@@ -1,52 +1,26 @@
-import datetime
+import connexion
 import chain_service
-from flask import Flask
-from cryptography import x509
-from cryptography.hazmat.primitives import hashes
+from pathlib import Path
+from model import RegisterTransaction
+from connexion.options import SwaggerUIOptions
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives.serialization import Encoding
 
-app = Flask(__name__)
+options = SwaggerUIOptions(swagger_ui_path="/swagger")
 
-one_day = datetime.timedelta(1, 0, 0)
+def register_transaction_handler(transaction: str):
+    register_transaction = RegisterTransaction.from_json_string(transaction)
+    return { 'message': 'Success', 'your_name': register_transaction.identity }
+
+def get_secret(user):
+    return "hi"
+
+app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
+app.add_api('openapi.yaml')
+
 private_key = rsa.generate_private_key(
     public_exponent=65537,
     key_size=2048,
 )
-public_key = private_key.public_key()
 
-@app.route("/api/csr")
-def csr_handler():
-    pass
-
-@app.route("/x509/csr")
-def x509_csr_handler():
-    builder = x509.CertificateBuilder()
-    builder = builder.subject_name(x509.Name([
-    x509.NameAttribute(NameOID.COMMON_NAME, 'cryptography.io'),
-    ]))
-    builder = builder.issuer_name(x509.Name([
-    x509.NameAttribute(NameOID.COMMON_NAME, 'cryptography.io'),
-    ]))
-    builder = builder.not_valid_before(datetime.datetime.today() - one_day)
-    builder = builder.not_valid_after(datetime.datetime.today() + (one_day * 30))
-    builder = builder.serial_number(x509.random_serial_number())
-    builder = builder.public_key(public_key)
-    builder = builder.add_extension(
-        x509.SubjectAlternativeName(
-            [x509.DNSName('cryptography.io')]
-        ),
-        critical=False
-    )
-    builder = builder.add_extension(
-        x509.BasicConstraints(ca=False, path_length=None), critical=True,
-    )
-    certificate = builder.sign(
-        private_key=private_key, algorithm=hashes.SHA256(),
-    )
-    isinstance(certificate, x509.Certificate)
-    print(certificate.public_bytes(encoding=Encoding.PEM))
-    return "<p>Hello, World!</p>"
-
-app.run("localhost", 8080)
+if __name__ == '__main__':
+    app.run(f"{Path(__file__).stem}:app", port=8080)
