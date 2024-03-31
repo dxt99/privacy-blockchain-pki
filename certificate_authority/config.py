@@ -1,6 +1,9 @@
 import json
 from web3 import Web3
 
+# DB file
+sqlite_db_file = "db/certtificate_authority.db"
+
 # CA smart contract
 class SmartContract:
     def __init__(self, chain: Web3):
@@ -18,7 +21,6 @@ class AdminAccount:
         account_json = json.loads(buffer)
         self.account_address = account_json["address"]
         self.account_key = account_json["key"]
-    
 
 # Web3 chain connection
 class ChainConnection:

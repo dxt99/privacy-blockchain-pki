@@ -1,5 +1,5 @@
 import datetime
-import eth
+import chain_service
 from flask import Flask
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
@@ -8,8 +8,6 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives.serialization import Encoding
 
 app = Flask(__name__)
-
-data = []
 
 one_day = datetime.timedelta(1, 0, 0)
 private_key = rsa.generate_private_key(
