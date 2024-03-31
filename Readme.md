@@ -14,7 +14,7 @@ This repo consists of two different services, `smart_contract` containing the et
 Simply modify `smart_contract/truffle-config.js` as needed. No modification is required to run and deploy the smart contract. By default, it will deploy to the local Ganache chain. Note that you need to run the Ganache application manually.
 
 ##### Certificate authority
-Modify `config/account.json` address and private key to match the CA account in the Ethereum chain. If you are using the default truffle config with the local Ganache chain, the CA account will be the first account in the chain. 
+Add `certificate_authority/config/account.json` using the given template in `certificate_authority/config/account.json.example`. Modify the address and private key to match the CA account in the Ethereum chain. If you are using the default truffle config with the local Ganache chain, the CA account will be the first account in the chain. 
 
 ## Deployment
 Simply run `pipeline.ps1` using powershell. This script will check whether some required dependencies exist, run some unit tests, then deploy the smart contract using the configured Truffle settings. The build result will be stored in `smart_contract/build/contracts/`, and the CA smart contract build result will also be sent to `certificate_authority/config/contracts/`, where the ABI and the smart contract address are stored.
