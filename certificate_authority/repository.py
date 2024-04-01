@@ -18,7 +18,11 @@ class RegistrationRepository:
             print("Failed to get sqlite db connection")
             
     def approve(self, request: RegistrationRequest):
-        raise NotImplementedError
+        conn = self.__get_connection()
+        cur = conn.cursor()
+        cur.execute(f"UPDATE registrations set approval_status = '{ApprovalStatus.Approved.value}' WHERE identity = ? AND public_key = ?",
+                    (request.transaction.identity, request.transaction.public_key))
+        conn.commit()
     
     def reject(self, request: RegistrationRequest):
         raise NotImplementedError

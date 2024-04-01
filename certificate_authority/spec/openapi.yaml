@@ -4,6 +4,9 @@ info:
   version: '1'
   description: Just trying things out
 
+servers:
+- url: http://localhost:8080
+
 paths:
   /register:
     post:
@@ -59,7 +62,7 @@ paths:
       operationId: app.get_all_requests
       responses:
         '200':
-          description: Fetched transaction from smart contract
+          description: Registration requests from the database
           content:
             'application/json':
               schema:
@@ -67,6 +70,43 @@ paths:
                 items:
                   type: object
                   $ref: '#/components/schemas/RegistrationRequest'
+  /admin/requests/pending:
+    get:
+      summary: Gets all pending requests from the database
+      operationId: app.get_pending_requests
+      responses:
+        '200':
+          description: Pending registration requests from the database
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
+  /admin/approve:
+    post:
+      summary: Approve registration request and posts it to the blockchain
+      operationId: app.approve_request
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Fetched transaction from smart contract
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
 
 components:
   schemas:

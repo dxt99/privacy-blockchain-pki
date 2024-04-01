@@ -11,22 +11,45 @@ chain_service = ChainService()
 registration_service = RegistrationRequestService()
 
 def register_transaction(transaction: str):
-    transaction = Transaction.from_json_string(transaction)
-    result = registration_service.register_request(RegistrationRequest(transaction, ApprovalStatus.Pending))
-    return result
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        result = registration_service.register_request(RegistrationRequest(transaction, ApprovalStatus.Pending))
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+        
+def approve_request(transaction: str):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        result = registration_service.approve(transaction)
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
 
 def get_transaction(id: int):
     try:
-        return chain_service.get_transaction(id)
+        headers = {"Content-Type": "application/json"}
+        return chain_service.get_transaction(id), 200, headers
     except:
         return connexion.problem(
-            title="NotFound",
-            detail="The requested resource was not found",
-            status=404,
+            title = "NotFound",
+            detail = "The requested resource was not found",
+            status = 404,
         )
         
 def get_all_requests():
     return registration_service.get_all_requests()
+
+def get_pending_requests():
+    return registration_service.get_pending_requests()
 
 app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
 app.add_api('openapi.yaml')
