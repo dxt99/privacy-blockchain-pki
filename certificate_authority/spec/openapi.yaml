@@ -18,7 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterTransaction'
+              $ref: '#/components/schemas/Transaction'
       responses:
         '200':
           description: Application status
@@ -50,7 +50,7 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/RegisterTransaction'
+                $ref: '#/components/schemas/Transaction'
         '404':
           description: Resource not found
           content:
@@ -60,7 +60,7 @@ paths:
 
 components:
   schemas:
-    RegisterTransaction:
+    Transaction:
       type: object
       properties:
         identity:
