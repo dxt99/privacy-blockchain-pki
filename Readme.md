@@ -16,6 +16,9 @@ Simply modify `smart_contract/truffle-config.js` as needed. No modification is r
 ##### Certificate authority
 Add `certificate_authority/config/account.json` using the given template in `certificate_authority/config/account.json.example`. Modify the address and private key to match the CA account in the Ethereum chain. If you are using the default truffle config with the local Ganache chain, the CA account will be the first account in the chain. 
 
+
+Some extra configuration can also be found in `certificate_authority/config.py`, such as the name of the CA, the sqlite database file name, etc.
+
 ## Deployment
 Simply run `pipeline.ps1` using powershell. This script will check whether some required dependencies exist, run some unit tests, then deploy the smart contract using the configured Truffle settings. The build result will be stored in `smart_contract/build/contracts/`, and the CA smart contract build result will also be sent to `certificate_authority/config/contracts/`, where the ABI and the smart contract address are stored.
 

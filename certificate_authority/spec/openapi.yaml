@@ -11,8 +11,8 @@ servers:
 paths:
   /register:
     post:
-      summary: Return secret string
-      operationId: app.register_transaction_handler
+      summary: Applies register transaction for approval
+      operationId: app.register_transaction
       requestBody:
         x-body-name: transaction
         content:
@@ -21,17 +21,42 @@ paths:
               $ref: '#/components/schemas/RegisterTransaction'
       responses:
         '200':
-          description: status
+          description: Application status
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
+  
+  /get/{id}:
+    get:
+      summary: Gets a specific transaction from the smart contract
+      operationId: app.get_transaction
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: the transaction identifier
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fetched transaction from smart contract
           content:
             'application/json':
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  your_name:
-                    type: string
-
+                $ref: '#/components/schemas/RegisterTransaction'
+        '404':
+          description: Resource not found
+          content:
+            'text/plain':
+              schema:
+                type: string
 
 components:
   schemas:
@@ -41,6 +66,4 @@ components:
         identity:
           type: string
         public_key:
-          type: string
-        signatures:
           type: string

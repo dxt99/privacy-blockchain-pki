@@ -11,17 +11,15 @@ from cryptography.hazmat.primitives.serialization import Encoding
 one_day = datetime.timedelta(1, 0, 0)
 
 @dataclass
-class RegisterTransaction:
+class Transaction:
     identity: str
     public_key: str
-    signatures: str
     
     @staticmethod
     def from_json_string(transaction_json):
         identity = transaction_json["identity"]
         public_key = transaction_json["public_key"]
-        signatures = transaction_json["signatures"]
-        return RegisterTransaction(identity, public_key, signatures)
+        return Transaction(identity, public_key)
         
 
 @dataclass
@@ -56,6 +54,7 @@ class CertificateMapper:
         certificate = builder.sign(
             private_key=private_key, algorithm=hashes.SHA256(),
         )
+        return certificate
     
     @staticmethod
     def from_x509(certificate: X509Certificate) -> SmartContractCertificate:

@@ -1,6 +1,13 @@
 import json
 from web3 import Web3
 from dataclasses import dataclass
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+# CA private key, this will we stored later
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048,
+)
 
 # DB file
 sqlite_db_file = "db/certtificate_authority.db"
@@ -43,7 +50,7 @@ class ChainConnection:
         eth_address = 'http://127.0.0.1:7545'
         self.admin = AdminAccount()
         self.eth_chain = Web3(Web3.HTTPProvider(eth_address))
-        assert(self.chain.is_connected())
+        assert(self.eth_chain.is_connected())
         self.contract = SmartContract(self.eth_chain)
         
 
