@@ -57,6 +57,20 @@ paths:
             'text/plain':
               schema:
                 type: string
+  /admin/requests:
+    get:
+      summary: Gets all registration requests from the database
+      operationId: app.get_all_requests
+      responses:
+        '200':
+          description: Fetched transaction from smart contract
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
 
 components:
   schemas:
@@ -66,4 +80,12 @@ components:
         identity:
           type: string
         public_key:
+          type: string
+    RegistrationRequest:
+      type: object
+      properties:
+        transaction:
+          type: object
+          $ref: '#/components/schemas/Transaction'
+        status:
           type: string

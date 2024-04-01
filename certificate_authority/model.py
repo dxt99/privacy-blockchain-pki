@@ -1,6 +1,7 @@
 import datetime
 import json
 from dataclasses import dataclass
+from enum import Enum
 from cryptography import x509
 from cryptography.x509 import Certificate as X509Certificate
 from cryptography.hazmat.primitives import hashes
@@ -20,7 +21,16 @@ class Transaction:
         identity = transaction_json["identity"]
         public_key = transaction_json["public_key"]
         return Transaction(identity, public_key)
-        
+
+class ApprovalStatus(Enum):
+    Pending = "Pending"
+    Approved = "Approved"
+    Rejected = "Rejected"
+    
+@dataclass
+class RegistrationRequest:
+    transaction: Transaction
+    status: ApprovalStatus
 
 @dataclass
 class SmartContractCertificate:

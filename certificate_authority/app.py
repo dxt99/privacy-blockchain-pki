@@ -1,16 +1,19 @@
 import connexion
 from pathlib import Path
-from model import Transaction
+from typing import List
+from model import Transaction, RegistrationRequest, ApprovalStatus
 from chain_service import ChainService
+from registration_request_service import RegistrationRequestService
 from connexion.options import SwaggerUIOptions
 
 options = SwaggerUIOptions(swagger_ui_path="/swagger")
 chain_service = ChainService()
+registration_service = RegistrationRequestService()
 
 def register_transaction(transaction: str):
-    register_transaction = Transaction.from_json_string(transaction)
-    # TODO: check if ongoing application is already present in database
-    return 'Success'
+    transaction = Transaction.from_json_string(transaction)
+    result = registration_service.register_request(RegistrationRequest(transaction, ApprovalStatus.Pending))
+    return result
 
 def get_transaction(id: int):
     try:
@@ -21,6 +24,9 @@ def get_transaction(id: int):
             detail="The requested resource was not found",
             status=404,
         )
+        
+def get_all_requests():
+    return registration_service.get_all_requests()
 
 app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
 app.add_api('openapi.yaml')
