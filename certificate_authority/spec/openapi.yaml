@@ -4,10 +4,6 @@ info:
   version: '1'
   description: Just trying things out
 
-servers:
-  - url: http://localhost:8080
-    description: Local sandbox
-
 paths:
   /register:
     post:
