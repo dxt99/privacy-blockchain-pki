@@ -7,8 +7,11 @@ class RegistrationRepository:
     def __init__(self):
         conn = self.__get_connection()
         cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS registrations(identity, public_key, approval_status)")
+        cur.execute("CREATE TABLE IF NOT EXISTS registrations(identity, public_key, signatures, approval_status)")
         conn.commit()
+        
+    def __rows_to_registration_requests(self, rows):
+        return [RegistrationRequest(Transaction(row[0], row[1], row[2]), row[3]) for row in rows]
     
     def __get_connection(self):
         try:
@@ -20,8 +23,8 @@ class RegistrationRepository:
     def approve(self, request: RegistrationRequest):
         conn = self.__get_connection()
         cur = conn.cursor()
-        cur.execute(f"UPDATE registrations set approval_status = '{ApprovalStatus.Approved.value}' WHERE identity = ? AND public_key = ?",
-                    (request.transaction.identity, request.transaction.public_key))
+        cur.execute(f"UPDATE registrations set approval_status = '{ApprovalStatus.Approved.value}' WHERE identity = ? AND public_key = ? AND signatures = ?",
+                    (request.transaction.identity, request.transaction.public_key, request.transaction.signatures))
         conn.commit()
     
     def reject(self, request: RegistrationRequest):
@@ -31,26 +34,24 @@ class RegistrationRepository:
         conn = self.__get_connection()
         cur = conn.cursor()
         res = cur.execute(f"SELECT * FROM registrations").fetchall()
-        requests = [RegistrationRequest(Transaction(row[0], row[1]), row[2]) for row in res]
-        return requests
+        return self.__rows_to_registration_requests(res)
     
     def get_pending_requests(self) -> List[RegistrationRequest]:
         conn = self.__get_connection()
         cur = conn.cursor()
         res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.Pending.value}'").fetchall()
-        requests = [RegistrationRequest(Transaction(row[0], row[1]), row[2]) for row in res]
-        return requests
+        return self.__rows_to_registration_requests(res)
     
     def register_request(self, request: RegistrationRequest):
         conn = self.__get_connection()
         cur = conn.cursor()
-        cur.execute(f"INSERT INTO registrations VALUES (?, ?, ?)", 
-                    (request.transaction.identity, request.transaction.public_key, request.status.value))
+        cur.execute(f"INSERT INTO registrations VALUES (?, ?, ?, ?)", 
+                    (request.transaction.identity, request.transaction.public_key, request.transaction.signatures, request.status.value))
         conn.commit()
 
     
 if  __name__ == '__main__':
     repo = RegistrationRepository()
-    request = RegistrationRequest(Transaction("test", "key"), ApprovalStatus.Pending)
+    request = RegistrationRequest(Transaction("test", "key", "hello"), ApprovalStatus.Pending)
     repo.register_request(request)
     print(repo.get_requests())

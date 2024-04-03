@@ -15,12 +15,14 @@ one_day = datetime.timedelta(1, 0, 0)
 class Transaction:
     identity: str
     public_key: str
+    signatures: str
     
     @staticmethod
     def from_json_string(transaction_json):
         identity = transaction_json["identity"]
         public_key = transaction_json["public_key"]
-        return Transaction(identity, public_key)
+        signatures = transaction_json["signatures"]
+        return Transaction(identity, public_key, signatures)
 
 class ApprovalStatus(Enum):
     Pending = "Pending"

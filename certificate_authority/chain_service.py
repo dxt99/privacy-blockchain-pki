@@ -13,7 +13,7 @@ class ChainService:
         Chain_id = eth_chain.eth.chain_id
         nonce = eth_chain.eth.get_transaction_count(self.__chain.admin.account_address)
         # Call your function
-        call_function = contract.functions.register(transaction.identity, transaction.public_key).build_transaction({"chainId": Chain_id, "from": self.__chain.admin.account_address, "nonce": nonce})
+        call_function = contract.functions.register(transaction.identity, transaction.public_key, transaction.signatures).build_transaction({"chainId": Chain_id, "from": self.__chain.admin.account_address, "nonce": nonce})
 
         # Sign transaction
         signed_tx = eth_chain.eth.account.sign_transaction(call_function, private_key=self.__chain.admin.account_key)
@@ -27,8 +27,8 @@ class ChainService:
         return (tx_receipt)
     
     def get_transaction(self, id: int) -> Transaction:
-        _, identity, public_key = self.__chain.contract.eth_contract.functions.get(id).call()
-        return Transaction(identity, public_key)
+        _, identity, public_key, signatures = self.__chain.contract.eth_contract.functions.get(id).call()
+        return Transaction(identity, public_key, signatures)
 
 if __name__ == '__main__':
     service = ChainService()
