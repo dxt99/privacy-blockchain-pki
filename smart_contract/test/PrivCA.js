@@ -9,19 +9,19 @@ contract('PrivCA', (accounts) => {
 
   before(async () => {
     privCaInstance = await PrivCA.deployed();
-    await privCaInstance.register.sendTransaction("www.firstone.com", "pubKey01");
-    await privCaInstance.register.sendTransaction("www.secondone.com", "revokedPubKey02");
+    await privCaInstance.register.sendTransaction("www.firstone.com", "pubKey01", "23df9923424");
+    await privCaInstance.register.sendTransaction("www.secondone.com", "revokedPubKey02", "9acbd2039092");
     await privCaInstance.revoke.sendTransaction(1);
   });
 
   it('should register sucessfully', async () => {
-    const result = await privCaInstance.register.call("b", "c");
+    const result = await privCaInstance.register.call("b", "c", "abcdef", {from: ownerAccount});
     assert.equal(result , 2);
   });
 
   it('should throw on register if sender is not owner', async () => {
     try {
-      await privCaInstance.register.call("b", "c", {from: userAccount})
+      await privCaInstance.register.call("b", "c", "abcdef", {from: userAccount})
       assert.fail("The transaction should have thrown an error");
     }
     catch (err) {

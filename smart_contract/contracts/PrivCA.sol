@@ -15,7 +15,7 @@ contract PrivCA is Owned {
 		string operation;
 		string identity;
         string publicKey;
-		// add more props later
+		string signatures;
     }
 
 	constructor() {
@@ -23,17 +23,17 @@ contract PrivCA is Owned {
 	}
 
 	// CA validates identity and verifies registration, then calls register
-	function register(string memory domain, string memory publicKey) public onlyOwner returns(uint){
-		Transaction memory tr = Transaction("register", domain, publicKey);
+	function register(string memory domain, string memory publicKey, string memory signatures) public onlyOwner returns(uint){
+		Transaction memory tr = Transaction("register", domain, publicKey, signatures);
 		transactions.push(tr);
 
 		return transactions.length - 1;
 	}
 
 	// Anyone can post updates, this will be used in certificate verification
-	function update(string memory publicKey) public returns(uint){
+	function update(string memory publicKey, string memory signatures) public returns(uint){
 		// add more pushed info later
-		Transaction memory tr = Transaction("update", "", publicKey);
+		Transaction memory tr = Transaction("update", "", publicKey, signatures);
 		transactions.push(tr);
 
 		return transactions.length - 1;
@@ -47,7 +47,7 @@ contract PrivCA is Owned {
 	} 
 
 	function get(uint id) public view returns(Transaction memory){
-		if (revocations[id]) return Transaction("revoked", "", "");
+		if (revocations[id]) return Transaction("revoked", "", "", "");
 		return transactions[id];
 	}
 }
