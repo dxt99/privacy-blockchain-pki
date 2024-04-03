@@ -1,4 +1,3 @@
-const ConvertLib = artifacts.require("ConvertLib");
 const PrivCA = artifacts.require("PrivCA");
 const owned = artifacts.require("owned");
 
