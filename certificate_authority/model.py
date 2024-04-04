@@ -28,11 +28,13 @@ class ApprovalStatus(Enum):
     Pending = "Pending"
     Approved = "Approved"
     Rejected = "Rejected"
+    Revoked = "Revoked"
     
 @dataclass
 class RegistrationRequest:
     transaction: Transaction
     status: ApprovalStatus
+    id: int = -1
 
 @dataclass
 class SmartContractCertificate:
@@ -71,3 +73,8 @@ class CertificateMapper:
     @staticmethod
     def from_x509(certificate: X509Certificate) -> SmartContractCertificate:
         raise NotImplementedError
+    
+if __name__ == '__main__':
+    t1 = Transaction("a", "b", "c")
+    t2 = Transaction("a", "b", "c")
+    print(t1 == t2)

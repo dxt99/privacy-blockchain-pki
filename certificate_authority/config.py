@@ -10,7 +10,7 @@ private_key = rsa.generate_private_key(
 )
 
 # DB file
-sqlite_db_file = "db/certtificate_authority.db"
+sqlite_db_file = "db/certificate_authority.db"
 
 # CA smart contract
 @dataclass

@@ -55,7 +55,12 @@ contract('PrivCA', (accounts) => {
   });
 
   it('should return revoked transactions', async() => {
-    const tr = await privCaInstance.get.call(revokedTransactionId);
-    assert.equal(tr.operation, "revoked");
+    const tr = await privCaInstance.isRevoked.call(revokedTransactionId);
+    assert.equal(tr, true);
+  });
+
+  it('should return non-revoked transactions', async() => {
+    const tr = await privCaInstance.isRevoked.call(98);
+    assert.equal(tr, false);
   });
 });

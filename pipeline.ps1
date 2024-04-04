@@ -100,6 +100,14 @@ PrintSegment "Deployments"
 if (${no-deploy}){
     Write-Host "Skipping deployment ..."
 } else {
+    # resetting CA database
+    Write-Host "Resetting certificate authority..."
+    if ([System.IO.File]::Exists("certificate_authority/db/certificate_authority.db")){
+        PrintSuccess "Deleting existing database ..."
+        Remove-Item "certificate_authority/db/certificate_authority.db"
+    } else {
+        PrintSuccess "No reset needed"
+    }
     # deploying smart contract
     Write-Host "Compiling and deploying contracts..."
     Set-Location smart_contract

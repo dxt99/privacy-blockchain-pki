@@ -47,7 +47,10 @@ contract PrivCA is Owned {
 	} 
 
 	function get(uint id) public view returns(Transaction memory){
-		if (revocations[id]) return Transaction("revoked", "", "", "");
 		return transactions[id];
+	}
+
+	function isRevoked(uint id) public view returns(bool){
+		return revocations[id];
 	}
 }

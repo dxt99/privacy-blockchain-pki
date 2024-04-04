@@ -33,6 +33,26 @@ def approve_request(transaction: str):
             detail = str(e),
             status = 400,
         )
+        
+def get_request(transaction: str):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+    try:
+        result = registration_service.get_request(transaction)
+    except:
+        return connexion.problem(
+            title = "NotFound",
+            detail = "The requested resource was not found",
+            status = 404,
+        )
+    headers = {"Content-Type": "application/json"}
+    return result, 200, headers
 
 def get_transaction(id: int):
     try:

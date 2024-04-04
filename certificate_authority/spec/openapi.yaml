@@ -31,25 +31,32 @@ paths:
             'text/plain':
               schema:
                 type: string
-  
-  /get/{id}:
-    get:
-      summary: Gets a specific transaction from the smart contract
-      operationId: app.get_transaction
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: the transaction identifier
-        schema:
-          type: integer
+  /status:
+    post:
+      summary: Gets registration request of specific transaction
+      operationId: app.get_request
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
       responses:
         '200':
-          description: Fetched transaction from smart contract
+          description: Registration requests from the database
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/Transaction'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
         '404':
           description: Resource not found
           content:
@@ -107,6 +114,30 @@ paths:
             'text/plain':
               schema:
                 type: string
+  /debug/get/{id}:
+    get:
+      summary: Gets a specific transaction from the smart contract
+      operationId: app.get_transaction
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: the transaction identifier
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fetched transaction from smart contract
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          description: Resource not found
+          content:
+            'text/plain':
+              schema:
+                type: string
 
 components:
   schemas:
@@ -127,3 +158,5 @@ components:
           $ref: '#/components/schemas/Transaction'
         status:
           type: string
+        id:
+          type: integer
