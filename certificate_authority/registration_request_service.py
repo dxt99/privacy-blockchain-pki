@@ -33,6 +33,21 @@ class RegistrationRequestService:
         
         return "Success"
     
+    def reject(self, transaction: Transaction):
+        pending_requests = self.__repository.get_pending_requests()
+        target_requests = [request for request in pending_requests if request.transaction.identity == transaction.identity]
+        if len(target_requests) != 1:
+            raise Exception(f"There seems to be {len(target_requests)} pending request for this identity, this should not be possible")
+        target_request = target_requests[0]
+        if target_request.transaction.public_key != transaction.public_key:
+            raise Exception(f"Public key stored in the database is different.")
+        if target_request.transaction.signatures != transaction.signatures:
+            raise Exception(f"Signatures stored in the database is different.")
+        new_request = RegistrationRequest(transaction, ApprovalStatus.Rejected, -1)
+        self.__repository.update_rqeuest(new_request)
+        
+        return "Success"
+    
     def get_request(self, transaction: Transaction) -> RegistrationRequest:
         results = self.__repository.get_request(transaction)
         if len(results) != 1:

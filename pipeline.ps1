@@ -120,5 +120,10 @@ if (${no-deploy}){
     New-Item -ItemType Directory -Force -Path certificate_authority/smart_contract/ | out-null
     Copy-Item smart_contract/build/contracts/PrivCA.json certificate_authority/config/contracts/PrivCA.json | out-null
     PrintSuccess "CA Setup done"
+
+    # deploying services
+    Write-Host "Deploying other services..."
+    docker compose up -d
+    PrintSuccess "Service deployments done"
 }
 EndSegment

@@ -1,4 +1,5 @@
 import connexion
+import config
 from pathlib import Path
 from typing import List
 from model import Transaction, RegistrationRequest, ApprovalStatus
@@ -21,19 +22,7 @@ def register_transaction(transaction: str):
             detail = str(e),
             status = 400,
         )
-        
-def approve_request(transaction: str):
-    try:
-        transaction = Transaction.from_json_string(transaction)
-        result = registration_service.approve(transaction)
-        return result
-    except Exception as e:
-        return connexion.problem(
-            title = "BadOperation",
-            detail = str(e),
-            status = 400,
-        )
-        
+
 def get_request(transaction: str):
     try:
         transaction = Transaction.from_json_string(transaction)
@@ -64,15 +53,44 @@ def get_transaction(id: int):
             detail = "The requested resource was not found",
             status = 404,
         )
-        
+
+# admin
 def get_all_requests():
     return registration_service.get_all_requests()
 
+# admin
 def get_pending_requests():
     return registration_service.get_pending_requests()
+
+# admin
+def approve_request(transaction: str):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        result = registration_service.approve(transaction)
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+
+# admin
+def reject_request(transaction: str):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        result = registration_service.reject(transaction)
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+        
 
 app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
 app.add_api('openapi.yaml')
 
 if __name__ == '__main__':
-    app.run(f"{Path(__file__).stem}:app", port=8080)
+    app.run(f"{Path(__file__).stem}:app", host=config.flask_host, port=8080)

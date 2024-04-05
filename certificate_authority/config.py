@@ -1,7 +1,11 @@
 import json
+import os
 from web3 import Web3
 from dataclasses import dataclass
 from cryptography.hazmat.primitives.asymmetric import rsa
+
+# Flask settings
+flask_host = os.environ['host'] if 'host' in os.environ else '127.0.0.1'
 
 # CA private key, this will we stored later
 private_key = rsa.generate_private_key(
@@ -47,7 +51,7 @@ class ChainConnection:
     contract: SmartContract
     
     def __init__(self):
-        eth_address = 'http://127.0.0.1:7545'
+        eth_address = os.environ['chain_url'] if 'chain_url' in os.environ else 'http://127.0.0.1:7545'
         self.admin = AdminAccount()
         self.eth_chain = Web3(Web3.HTTPProvider(eth_address))
         assert(self.eth_chain.is_connected())

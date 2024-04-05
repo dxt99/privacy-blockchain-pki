@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  certificate_authority:
+    build: ./certificate_authority/
+    environment:
+      - chain_url=http://host.docker.internal:7545
+      - host=0.0.0.0
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    ports:
+      - '8080:8080'
