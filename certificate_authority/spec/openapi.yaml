@@ -103,7 +103,30 @@ paths:
               $ref: '#/components/schemas/Transaction'
       responses:
         '200':
-          description: Fetched transaction from smart contract
+          description: Approval status
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
+  /admin/reject:
+    post:
+      summary: Rejects registration request
+      operationId: app.reject_request
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Rejection status
           content:
             'text/plain':
               schema:
