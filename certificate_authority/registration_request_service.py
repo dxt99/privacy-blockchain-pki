@@ -48,6 +48,17 @@ class RegistrationRequestService:
         
         return "Success"
     
+    def revoke(self, transaction: Transaction):
+        results = self.__repository.get_request(transaction)
+        if len(results) != 1:
+            raise Exception(f"Transaction not found")
+        target_request = results[0]
+        new_request = RegistrationRequest(transaction, ApprovalStatus.Revoked, target_request.id)
+        self.__chain_service.revoke(target_request.id)
+        self.__repository.update_rqeuest(new_request)
+        
+        return "Success"
+    
     def get_request(self, transaction: Transaction) -> RegistrationRequest:
         results = self.__repository.get_request(transaction)
         if len(results) != 1:

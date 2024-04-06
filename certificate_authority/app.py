@@ -88,7 +88,19 @@ def reject_request(transaction: str):
             status = 400,
         )
         
-
+# admin
+def revoke_transaction(transaction: str):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        result = registration_service.revoke(transaction)
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+        
 app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
 app.add_api('openapi.yaml')
 

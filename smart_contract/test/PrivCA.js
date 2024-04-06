@@ -2,8 +2,8 @@ const PrivCA = artifacts.require("PrivCA");
 
 contract('PrivCA', (accounts) => {
   let privCaInstance;
-  const activeTransactionId = 0;
-  const revokedTransactionId = 1;
+  const activeTransactionId = 1;
+  const revokedTransactionId = 0;
   const ownerAccount = accounts[0];
   const userAccount = accounts[1];
 
@@ -11,7 +11,7 @@ contract('PrivCA', (accounts) => {
     privCaInstance = await PrivCA.deployed();
     await privCaInstance.register.sendTransaction("www.firstone.com", "pubKey01", "23df9923424");
     await privCaInstance.register.sendTransaction("www.secondone.com", "revokedPubKey02", "9acbd2039092");
-    await privCaInstance.revoke.sendTransaction(1);
+    await privCaInstance.revoke.sendTransaction(revokedTransactionId);
   });
 
   it('should register sucessfully', async () => {
