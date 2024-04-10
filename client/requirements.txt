@@ -1,0 +1,4 @@
+cryptography
+dataclasses
+web3
+connexion[swagger-ui,uvicorn,flask]
