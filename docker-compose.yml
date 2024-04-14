@@ -13,6 +13,7 @@ services:
     build: ./client/
     environment:
       - chain_url=http://host.docker.internal:7545
+      - ca_url=http://localhost:8080
       - host=0.0.0.0
     extra_hosts:
     - "host.docker.internal:host-gateway"
