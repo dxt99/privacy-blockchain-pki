@@ -22,13 +22,50 @@ paths:
                 type: string
   /ca/status:
     post:
-      summary: Checks transaction status in ca
-      operationId: app.hello2
+      summary: Gets registration request of specific transaction
+      operationId: app.ca_status
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
       responses:
         '200':
-          description: Application status
+          description: Registration requests from the database
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
+        '400':
+          description: Bad request
           content:
             'text/plain':
               schema:
                 type: string
-    
+
+
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        identity:
+          type: string
+        public_key:
+          type: string
+        signatures:
+          type: string
+    RegistrationRequest:
+      type: object
+      properties:
+        transaction:
+          type: object
+          $ref: '#/components/schemas/Transaction'
+        status:
+          type: string
+        id:
+          type: integer
