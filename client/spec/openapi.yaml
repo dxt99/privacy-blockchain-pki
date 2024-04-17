@@ -9,6 +9,22 @@ servers:
 - url: http://localhost:8090
 
 paths:
+  /register:
+    post:
+      summary: Registers new certificate key
+      operationId: app.register
+      responses:
+        '204':
+          description: New certificate successfully registered
+
+  /status:
+    get:
+      summary: Gets status of current certificate
+      operationId: app.status
+      responses:
+        '204':
+          description: Sucesss
+    
   /ca/register:
     post:
       summary: Applies register transaction for approval

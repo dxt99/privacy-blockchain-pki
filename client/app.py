@@ -9,6 +9,12 @@ options = SwaggerUIOptions(swagger_ui_path="/swagger")
 def hello():
     return "hello"
 
+def register():
+    return
+
+def status():
+    return
+
 def ca_status(transaction: str):
     url = f"{config.ca_base_url}/status"
     res = requests.post(url, json=transaction)
