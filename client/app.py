@@ -3,19 +3,26 @@ import config
 import requests
 from pathlib import Path
 from connexion.options import SwaggerUIOptions
+from transaction_service import TransactionService
 
-options = SwaggerUIOptions(swagger_ui_path="/swagger")
+service = TransactionService()
 
 def hello():
     return "hello"
 
 def register():
-    return
+    if service.generate_and_register():
+       return
+    return connexion.problem(
+        title = "Bad request",
+        detail = "One of the required services is not ready",
+        status = 400
+    )
 
 def status():
-    return
+    return service.register_request_status()
 
-def ca_status(transaction: str):
+def ca_status(transaction: dict):
     url = f"{config.ca_base_url}/status"
     res = requests.post(url, json=transaction)
     try:
@@ -29,8 +36,9 @@ def ca_status(transaction: str):
             status = res.status_code,
         )
 
+options = SwaggerUIOptions(swagger_ui_path="/swagger")
 app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir="spec")
 app.add_api('openapi.yaml')
 
 if __name__ == '__main__':
-    app.run(f"{Path(__file__).stem}:app", host=config.flask_host, port=8090)
+    app.run(f"{Path(__file__).stem}:app", host=config.flask_host, port=config.client_port)

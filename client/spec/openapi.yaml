@@ -9,34 +9,27 @@ servers:
 - url: http://localhost:8090
 
 paths:
-  /register:
+  /new_key:
     post:
-      summary: Registers new certificate key
+      summary: Generates new key and registers it to the CA 
       operationId: app.register
       responses:
         '204':
           description: New certificate successfully registered
 
-  /status:
+  /register_status:
     get:
-      summary: Gets status of current certificate
+      summary: Gets status of register request sent to the certificate authority
       operationId: app.status
       responses:
-        '204':
-          description: Sucesss
-    
-  /ca/register:
-    post:
-      summary: Applies register transaction for approval
-      operationId: app.hello
-      responses:
         '200':
-          description: Application status
+          description: Transaction status
           content:
             'text/plain':
               schema:
                 type: string
-  /ca/status:
+
+  /debug/ca/status:
     post:
       summary: Gets registration request of specific transaction
       operationId: app.ca_status

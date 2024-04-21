@@ -11,7 +11,7 @@ options = SwaggerUIOptions(swagger_ui_path="/swagger")
 chain_service = ChainService()
 registration_service = RegistrationRequestService()
 
-def register_transaction(transaction: str):
+def register_transaction(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
         result = registration_service.register_request(RegistrationRequest(transaction, ApprovalStatus.Pending))
@@ -23,7 +23,7 @@ def register_transaction(transaction: str):
             status = 400,
         )
 
-def get_request(transaction: str):
+def get_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
     except Exception as e:
@@ -63,7 +63,7 @@ def get_pending_requests():
     return registration_service.get_pending_requests()
 
 # admin
-def approve_request(transaction: str):
+def approve_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
         result = registration_service.approve(transaction)
@@ -76,7 +76,7 @@ def approve_request(transaction: str):
         )
 
 # admin
-def reject_request(transaction: str):
+def reject_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
         result = registration_service.reject(transaction)
@@ -89,7 +89,7 @@ def reject_request(transaction: str):
         )
         
 # admin
-def revoke_transaction(transaction: str):
+def revoke_transaction(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
         result = registration_service.revoke(transaction)

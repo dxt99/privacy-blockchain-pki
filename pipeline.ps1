@@ -122,6 +122,9 @@ if (${no-deploy}){
     PrintSuccess "CA Setup done"
 
     # deploying services
+    Write-Host "Building docker images..."
+    docker compose build
+    PrintSuccess "Docker images built"
     Write-Host "Deploying other services..."
     docker compose up -d
     PrintSuccess "Service deployments done"
