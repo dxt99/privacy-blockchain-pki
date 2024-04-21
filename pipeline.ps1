@@ -117,7 +117,7 @@ if (${no-deploy}){
 
     # setting up abi to smart_contract
     Write-Host "Setting up CA"
-    New-Item -ItemType Directory -Force -Path certificate_authority/smart_contract/ | out-null
+    New-Item -ItemType Directory -Force -Path certificate_authority/config/contracts/ | out-null
     Copy-Item smart_contract/build/contracts/PrivCA.json certificate_authority/config/contracts/PrivCA.json | out-null
     PrintSuccess "CA Setup done"
 
