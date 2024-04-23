@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  title: Privacy aware log based PKI client
+  title: Privacy aware log based PKI verifier
   version: '1'
   description: Just trying things out
 
