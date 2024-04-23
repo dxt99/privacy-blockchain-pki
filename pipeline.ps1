@@ -21,6 +21,7 @@ function PrintError {
     )
 
     Write-Host -ForegroundColor Red $message
+    exit
 }
 
 function PrintSegment {
@@ -53,6 +54,13 @@ if (Get-Command "truffle" -errorAction SilentlyContinue){
     PrintError "Error: Truffle is missing"
 }
 
+if (Get-Command "pytest" -errorAction SilentlyContinue){
+    PrintSuccess "Pytest found"
+} else {
+    PrintError "Error: Pytest is missing"
+}
+
+
 if (Get-Command "docker" -errorAction SilentlyContinue){
     PrintSuccess "Docker found"
 } else {
@@ -74,6 +82,12 @@ if ([System.IO.File]::Exists("certificate_authority/config/account.json")){
 } else {
     PrintError "ERROR: CA account config not found"
 }
+Write-Host "Checking client config"
+if ([System.IO.File]::Exists("client/config/account.json")){
+    PrintSuccess "Client account config found"
+} else {
+    PrintError "ERROR: Client account config not found"
+}
 EndSegment
 
 # Tests
@@ -84,13 +98,24 @@ if (${no-test}){
     Write-Host "Running truffle tests"
     Set-Location smart_contract
     $test_result = truffle test | Out-String
+    Write-Host $test_result
     Set-Location ..
 
     if ($test_result.Contains("failing")){
         PrintError "ERROR: truffle tests failed"
-        exit
     } else {
         PrintSuccess "Truffle tests passed"
+    }
+    Write-Host "Running client smoke tests"
+    Set-Location client
+    $test_result = pytest | Out-String
+    Write-Host $test_result
+    Set-Location ..
+
+    if ($test_result.Contains("fail")){
+        PrintError "ERROR: pytest smoke tests failed"
+    } else {
+        PrintSuccess "Pytest smoke tests passed"
     }
 }
 EndSegment
@@ -115,11 +140,17 @@ if (${no-deploy}){
     Set-Location ..
     PrintSuccess "Contract deployments done"
 
-    # setting up abi to smart_contract
+    # Setting up abi to certificate_authority
     Write-Host "Setting up CA"
     New-Item -ItemType Directory -Force -Path certificate_authority/config/contracts/ | out-null
     Copy-Item smart_contract/build/contracts/PrivCA.json certificate_authority/config/contracts/PrivCA.json | out-null
-    PrintSuccess "CA Setup done"
+    PrintSuccess "CA setup done"
+
+    # Setting up abi to client
+    Write-Host "Setting up client"
+    New-Item -ItemType Directory -Force -Path client/config/contracts/ | out-null
+    Copy-Item smart_contract/build/contracts/PrivCA.json client/config/contracts/PrivCA.json | out-null
+    PrintSuccess "Client setup done"
 
     # deploying services
     Write-Host "Building docker images..."
