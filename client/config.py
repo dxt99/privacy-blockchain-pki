@@ -28,7 +28,7 @@ class SmartContract:
 
 # CA smart contract account
 @dataclass
-class AdminAccount:
+class ClientAccount:
     account_address: str
     account_key: str
     
@@ -41,13 +41,13 @@ class AdminAccount:
 # Web3 chain connection
 @dataclass
 class ChainConnection:
-    admin: AdminAccount
+    client: ClientAccount
     eth_chain: Web3
     contract: SmartContract
     
     def __init__(self):
         eth_address = os.environ['chain_url'] if 'chain_url' in os.environ else 'http://127.0.0.1:7545'
-        self.admin = AdminAccount()
+        self.client = ClientAccount()
         self.eth_chain = Web3(Web3.HTTPProvider(eth_address))
         assert(self.eth_chain.is_connected())
         self.contract = SmartContract(self.eth_chain)
