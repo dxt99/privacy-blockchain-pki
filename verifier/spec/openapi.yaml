@@ -1,0 +1,82 @@
+openapi: '3.0.0'
+info:
+  title: Privacy aware log based PKI client
+  version: '1'
+  description: Just trying things out
+
+
+servers:
+- url: http://localhost:8100
+
+paths:
+  /validate:
+    post:
+      summary: Validates transactions and returns current public key
+      operationId: app.verify
+      requestBody:
+        x-body-name: transactions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transactions'
+      responses:
+        '200':
+          description: Certificate status
+          content:
+            'text/plain':
+              schema:
+                type: boolean
+  /debug/ca/status:
+    post:
+      summary: Gets registration request of specific transaction
+      operationId: app.ca_status
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Registration requests from the database
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
+
+
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        identity:
+          type: string
+        public_key:
+          type: string
+        signatures:
+          type: string
+    RegistrationRequest:
+      type: object
+      properties:
+        transaction:
+          type: object
+          $ref: '#/components/schemas/Transaction'
+        status:
+          type: string
+        id:
+          type: integer
+    Transactions:
+      type: object
+      additionalProperties:
+        type: object
+        $ref: '#/components/schemas/Transaction'

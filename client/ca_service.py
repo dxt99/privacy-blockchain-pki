@@ -22,6 +22,6 @@ class CaService:
         res = requests.post(url, json = transaction_dict)
         try:
             payload = res.json()
-            return str(payload["status"])
+            return str(payload["status"]), int(payload["id"])
         except:
             return "Failed to get status from CA"

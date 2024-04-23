@@ -1,10 +1,15 @@
 version: '3.4'
+
+x-common-variables: &common-variables
+  chain_url: http://host.docker.internal:7545
+  ca_url: http://host.docker.internal:8080
+  verifier_url: http://host.docker.internal:8100
+  host: 0.0.0.0
+
 services:
   certificate_authority:
     build: ./certificate_authority/
-    environment:
-      - chain_url=http://host.docker.internal:7545
-      - host=0.0.0.0
+    environment: *common-variables
     extra_hosts:
     - "host.docker.internal:host-gateway"
     ports:
@@ -12,12 +17,28 @@ services:
   client01:
     build: ./client/
     environment:
-      - chain_url=http://host.docker.internal:7545
-      - ca_url=http://host.docker.internal:8080
-      - host=0.0.0.0
-      - port=8091
-      - common_name=client01.com
+      <<: *common-variables
+      port: 8091
+      common_name: client01.com
     extra_hosts:
     - "host.docker.internal:host-gateway"
     ports:
       - '8091:8091'
+  client02:
+    build: ./client/
+    environment:
+      <<: *common-variables
+      port: 8092
+      common_name: client02.com
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    ports:
+      - '8092:8092'
+  verifier:
+    build: ./verifier/
+    environment:
+      <<: *common-variables
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    ports:
+      - '8100:8100'

@@ -88,6 +88,12 @@ if ([System.IO.File]::Exists("client/config/account.json")){
 } else {
     PrintError "ERROR: Client account config not found"
 }
+Write-Host "Checking verifier config"
+if ([System.IO.File]::Exists("verifier/config/account.json")){
+    PrintSuccess "Verifier account config found"
+} else {
+    PrintError "ERROR: Verifier account config not found"
+}
 EndSegment
 
 # Tests
@@ -106,6 +112,7 @@ if (${no-test}){
     } else {
         PrintSuccess "Truffle tests passed"
     }
+
     Write-Host "Running client smoke tests"
     Set-Location client
     $test_result = pytest | Out-String
@@ -113,9 +120,9 @@ if (${no-test}){
     Set-Location ..
 
     if ($test_result.Contains("fail")){
-        PrintError "ERROR: pytest smoke tests failed"
+        PrintError "ERROR: client smoke tests failed"
     } else {
-        PrintSuccess "Pytest smoke tests passed"
+        PrintSuccess "Client smoke tests passed"
     }
 }
 EndSegment
@@ -151,6 +158,12 @@ if (${no-deploy}){
     New-Item -ItemType Directory -Force -Path client/config/contracts/ | out-null
     Copy-Item smart_contract/build/contracts/PrivCA.json client/config/contracts/PrivCA.json | out-null
     PrintSuccess "Client setup done"
+
+    # Setting up abi to verifier
+    Write-Host "Setting up verifier"
+    New-Item -ItemType Directory -Force -Path verifier/config/contracts/ | out-null
+    Copy-Item smart_contract/build/contracts/PrivCA.json verifier/config/contracts/PrivCA.json | out-null
+    PrintSuccess "Verifier setup done"
 
     # deploying services
     Write-Host "Building docker images..."

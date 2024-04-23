@@ -8,6 +8,7 @@ class TransactionService:
     name: str
     key_manager: KeyManager
     register_transaction: Transaction = None
+    register_transaction_id: int = -1
 
     def __init__(self):
         self.name = config.client_common_name
@@ -40,7 +41,9 @@ class TransactionService:
     def register_request_status(self) -> str:
         if self.register_transaction == None:
             return "No transaction found"
-        return CaService.transaction_status(self.register_transaction)
+        res, id = CaService.transaction_status(self.register_transaction)
+        self.register_transaction_id = res
+        return res
     
 if __name__ == '__main__':
     print(TransactionService.__serialize_signatures(b'a', b'bc', b'asd'))
