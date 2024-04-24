@@ -18,6 +18,15 @@ def register():
         detail = "One of the required services is not ready",
         status = 400
     )
+    
+def update():
+    if service.update_key():
+        return
+    return connexion.problem(
+        title = "Bad request",
+        detail = "Cannot update key",
+        status = 400
+    )
 
 def status():
     return service.register_request_status()

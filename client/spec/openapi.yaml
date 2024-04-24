@@ -16,6 +16,13 @@ paths:
       responses:
         '204':
           description: New certificate successfully registered
+  /update_key:
+    post:
+      summary: Generates new key and registers it to the CA 
+      operationId: app.update
+      responses:
+        '204':
+          description: New certificate successfully registered
 
   /register_status:
     get:
