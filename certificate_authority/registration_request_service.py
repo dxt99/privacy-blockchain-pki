@@ -18,12 +18,13 @@ class RegistrationRequestService:
         if RegistrationRequestService.initialized: return
         
         RegistrationRequestService.initialized = True
+        pub_key = config.private_key.public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.PKCS1).hex()
         signature = config.private_key.sign(
-            config.verifier_pub_key, 
+            b'verifier_service', 
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256()
             )
-        verifier_tx = Transaction(identity="verifier_service", public_key=config.verifier_pub_key.hex(), signatures=f"({signature.hex()})")
+        verifier_tx = Transaction(identity="verifier_service", public_key=pub_key, signatures=f"({signature.hex()})")
         request = RegistrationRequest(transaction=verifier_tx, status=ApprovalStatus.Pending)
         self.register_request(request)
         self.approve(verifier_tx)

@@ -100,10 +100,10 @@ if ([System.IO.File]::Exists("verifier/config/verifier_key/key.pem")){
 } else {
     PrintError "ERROR: Verifier private key not found"
 }
-if ([System.IO.File]::Exists("certificate_authority/config/verifier_key/pub_key.pem")){
-    PrintSuccess "Verifier public key found in CA"
+if ([System.IO.File]::Exists("certificate_authority/config/verifier_key/key.pem")){
+    PrintSuccess "Verifier key found in CA"
 } else {
-    PrintError "ERROR: Verifier public key not found in CA"
+    PrintError "ERROR: Verifier key not found in CA"
 }
 EndSegment
 

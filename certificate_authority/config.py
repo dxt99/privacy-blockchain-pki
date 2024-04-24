@@ -18,7 +18,7 @@ private_key = rsa.generate_private_key(
 sqlite_db_file = "db/certificate_authority.db"
 
 # Verifier public key
-verifier_pub_key = open("config/verifier_key/pub_key.pem", "rb").read()
+verifier_key = serialization.load_pem_private_key(open("config/verifier_key/key.pem", "rb").read(), password=None)
 
 # CA smart contract
 @dataclass

@@ -1,12 +1,16 @@
 import json
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List
 
 @dataclass
 class Transaction:
     identity: str
     public_key: str
     signatures: str
+    
+    def signature_parse(self) -> List[bytes]:
+        signature_strs = self.signatures.lstrip("(").rstrip(")").split(",")
+        return list(map(bytes.fromhex, signature_strs))
     
     def to_dict(self) -> dict:
         payload = {

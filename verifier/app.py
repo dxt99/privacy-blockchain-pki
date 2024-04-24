@@ -3,10 +3,14 @@ import config
 import requests
 from pathlib import Path
 from connexion.options import SwaggerUIOptions
+from verify_service import VerifyService
+from model import Transaction
 
+service = VerifyService()
 
-def verify():
-    return "hello"
+def verify(transactions: dict):
+    obj = Transaction.parse_transaction_list(transactions)
+    return str(service.verify(obj))
 
 def ca_status(transaction: dict):
     url = f"{config.ca_base_url}/status"
