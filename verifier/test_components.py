@@ -1,3 +1,4 @@
+from chain_service import ChainService
 from model import Transaction
 
 def test_transactions_deserialization():
@@ -15,3 +16,8 @@ def test_transactions_deserialization():
     
 if __name__ == '__main__':
     test_transactions_deserialization()
+    
+def test_chain_service():
+    service = ChainService()
+    res = service.is_revoked(2000000)
+    assert(not res)

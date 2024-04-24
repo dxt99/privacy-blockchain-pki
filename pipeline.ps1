@@ -135,6 +135,18 @@ if (${no-test}){
     } else {
         PrintSuccess "Client smoke tests passed"
     }
+
+    Write-Host "Running verifier smoke tests"
+    Set-Location verifier
+    $test_result = pytest | Out-String
+    Write-Host $test_result
+    Set-Location ..
+
+    if ($test_result.Contains("fail")){
+        PrintError "ERROR: verifier smoke tests failed"
+    } else {
+        PrintSuccess "Verifier smoke tests passed"
+    }
 }
 EndSegment
 
