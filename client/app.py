@@ -19,6 +19,9 @@ def register():
         status = 400
     )
     
+def get_transactions():
+    return service.get_transactions()
+    
 def update():
     if service.update_key():
         return

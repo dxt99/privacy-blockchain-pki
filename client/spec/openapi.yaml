@@ -23,7 +23,18 @@ paths:
       responses:
         '204':
           description: New certificate successfully registered
-
+  /get_transactions:
+    get:
+      summary: Gets transactions from generated keys
+      operationId: app.get_transactions
+      responses:
+        '200':
+          description: Transactions from generated keys
+          content:
+            'application/json':
+              schema:
+                type: object
+                $ref: '#/components/schemas/Transactions'
   /register_status:
     get:
       summary: Gets status of register request sent to the certificate authority
@@ -85,3 +96,8 @@ components:
           type: string
         id:
           type: integer
+    Transactions:
+      type: object
+      additionalProperties:
+        type: object
+        $ref: '#/components/schemas/Transaction'
