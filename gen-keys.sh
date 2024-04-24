@@ -1,0 +1,2 @@
+openssl genpkey -out verifier/config/verifier_key/key.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+openssl rsa -in verifier/config/verifier_key/key.pem -pubout > certificate_authority/config/verifier_key/pub_key.pem

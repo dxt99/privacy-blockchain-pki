@@ -38,6 +38,6 @@ class KeyManager:
         
 if __name__ == '__main__':
     key = rsa.generate_private_key(0x10001, 2048)
-    print(key.public_key().public_bytes(encoding=serialization.Encoding.PEM,format=serialization.PublicFormat.SubjectPublicKeyInfo))
+    print(key.private_bytes(encoding=serialization.Encoding.PEM,format=serialization.PrivateFormat.PKCS8,encryption_algorithm=serialization.NoEncryption()))
     print(key.public_key().public_bytes(encoding=serialization.Encoding.PEM,format=serialization.PublicFormat.PKCS1))
-    print(KeyManager.sign(key, b"data"))
+    #print(KeyManager.sign(key, b"data"))
