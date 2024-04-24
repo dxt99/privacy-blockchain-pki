@@ -1,12 +1,32 @@
+import config
 from typing import List
 from model import RegistrationRequest, Transaction, ApprovalStatus
 from repository import RegistrationRepository
 from chain_service import ChainService
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 class RegistrationRequestService:
+    initialized = False
+    
     def __init__(self):
         self.__repository = RegistrationRepository()
         self.__chain_service = ChainService()
+    
+    def initialize(self):
+        # registering verifier to smart contract
+        if RegistrationRequestService.initialized: return
+        
+        RegistrationRequestService.initialized = True
+        signature = config.private_key.sign(
+            config.verifier_pub_key, 
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256()
+            )
+        verifier_tx = Transaction(identity="verifier_service", public_key=config.verifier_pub_key.hex(), signatures=f"({signature.hex()})")
+        request = RegistrationRequest(transaction=verifier_tx, status=ApprovalStatus.Pending)
+        self.register_request(request)
+        self.approve(verifier_tx)
     
     def register_request(self, new_request: RegistrationRequest) -> str:
         all_requests = self.__repository.get_requests()

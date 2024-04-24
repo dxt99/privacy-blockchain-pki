@@ -3,6 +3,7 @@ import os
 from web3 import Web3
 from dataclasses import dataclass
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 # Flask settings
 flask_host = os.environ['host'] if 'host' in os.environ else '127.0.0.1'
@@ -15,6 +16,9 @@ private_key = rsa.generate_private_key(
 
 # DB file
 sqlite_db_file = "db/certificate_authority.db"
+
+# Verifier public key
+verifier_pub_key = open("config/verifier_key/pub_key.pem", "rb").read()
 
 # CA smart contract
 @dataclass

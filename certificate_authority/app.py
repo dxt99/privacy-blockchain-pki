@@ -105,4 +105,5 @@ app = connexion.FlaskApp(__name__, swagger_ui_options=options, specification_dir
 app.add_api('openapi.yaml')
 
 if __name__ == '__main__':
+    registration_service.initialize()
     app.run(f"{Path(__file__).stem}:app", host=config.flask_host, port=8080)
