@@ -88,10 +88,10 @@ class TransactionService:
     
     def get_transactions(self) -> Dict[int, Transaction]:
         if self.register_transaction_id == -1:
-            return {}
+            return self.update_transactions
         res = {self.register_transaction_id: self.register_transaction}
         res.update(self.update_transactions)
         return res
-    
+
 if __name__ == '__main__':
     print(TransactionService.__serialize_signatures(b'a', b'bc', b'asd'))
