@@ -13,10 +13,10 @@ class ChainService:
         Chain_id = eth_chain.eth.chain_id
         nonce = eth_chain.eth.get_transaction_count(self.__chain.client.account_address)
         # Call your function
-        call_function = contract.functions.register(transaction.public_key, transaction.signatures).build_transaction({"chainId": Chain_id, "from": self.__chain.client.account_address, "nonce": nonce})
+        call_function = contract.functions.update(transaction.public_key, transaction.signatures).build_transaction({"chainId": Chain_id, "from": self.__chain.client.account_address, "nonce": nonce})
         
         # Get return value
-        res = contract.functions.register(transaction.public_key, transaction.signatures).call({"from": self.__chain.client.account_address})
+        res = contract.functions.update(transaction.public_key, transaction.signatures).call({"from": self.__chain.client.account_address})
     
         # Sign transaction
         signed_tx = eth_chain.eth.account.sign_transaction(call_function, private_key=self.__chain.client.account_key)

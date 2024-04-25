@@ -12,15 +12,19 @@ class TransactionService:
     key_manager: KeyManager
     
     name: str
-    register_transaction: Transaction = None
-    register_transaction_id: int = -1
+    register_transaction: Transaction
+    register_transaction_id: int
     update_transactions: Dict[int, Transaction]
-    verifier_key: rsa.RSAPublicKey = None
+    verifier_key: rsa.RSAPublicKey
 
     def __init__(self):
         self.name = config.client_common_name
         self.key_manager = KeyManager()
         self.chain_service = ChainService()
+        self.register_transaction = None
+        self.register_transaction_id = -1
+        self.update_transactions = {}
+        self.verifier_key = None
     
     @staticmethod
     def __serialize_signatures(*signatures: bytes):
@@ -57,17 +61,20 @@ class TransactionService:
     
     def update_key(self) -> bool:
         self.__get_verifier_key()
+        if self.register_request_status() != "Approved":
+            print("Cannot update key, registration not approved yet")
+            return False
         if not self.register_transaction:
             print("Cannnot udpate key, no registration found")
             return False
         
         new_key = self.key_manager.add_key_to_chain()
         public_key = KeyManager.public_key_str(new_key)
-        prev_data = self.register_transaction.public_key
+        prev_data = bytes.fromhex(self.register_transaction.public_key)
         
         previous_signature: bytes = KeyManager.sign(new_key, prev_data)
         encrypted_signature: bytes = KeyManager.encrypt(self.verifier_key, previous_signature)
-        online_signature: bytes = KeyManager.sign(new_key, public_key)
+        online_signature: bytes = KeyManager.sign(new_key, bytes.fromhex(public_key))
         
         signatures: str = self.__serialize_signatures(online_signature, encrypted_signature)
         update_transaction = Transaction(
@@ -83,7 +90,7 @@ class TransactionService:
         if self.register_transaction == None:
             return "No transaction found"
         res, id = CaService.transaction_status(self.register_transaction)
-        self.register_transaction_id = res
+        self.register_transaction_id = id
         return res
     
     def get_transactions(self) -> Dict[int, Transaction]:

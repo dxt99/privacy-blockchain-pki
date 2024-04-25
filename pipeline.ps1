@@ -192,8 +192,8 @@ if (${no-deploy}){
     Write-Host "Building docker images..."
     docker compose build
     PrintSuccess "Docker images built"
-    Write-Host "Deploying other services..."
+    Write-Host "Running docker containers..."
     docker compose up -d
-    PrintSuccess "Service deployments done"
+    PrintSuccess "Deployments done"
 }
 EndSegment

@@ -1,3 +1,4 @@
+import config
 from model import Transaction
 from chain_service import ChainService
 from typing import List, Tuple
@@ -33,22 +34,58 @@ class VerifyService:
         if chain_tx != transaction:
             print("Transaction not matching chain records")
             return False
+    
+        # parsing pub key
         try: 
             pub_key = serialization.load_pem_public_key(bytes.fromhex(transaction.public_key))
             data_signature = transaction.signature_parse()[0]
-        
-            if len(transaction.identity) > 0 and transaction.identity == data:
-                try:
-                    pub_key.verify(data_signature, data.encode(), 
-                                   algorithm=hashes.SHA256(),
-                                   padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
-                    return True
-                except:
-                    print("Failed to verfiy signature")
-                    return False
-            else:
-                # TODO: verify updates
-                return True
         except:
             print("Failed to parse public key")
             return False
+        
+        # verifying registration
+        if len(transaction.identity) != 0:
+            try:
+                pub_key.verify(data_signature, data.encode(), 
+                                algorithm=hashes.SHA256(),
+                                padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
+                return True
+            except:
+                print("Failed to verify online signature")
+                return False
+
+        # verifying updates
+        if len(transaction.signature_parse()) != 2:
+            print("Signature count is wrong, expected two signatures")
+            return False
+        # verifying first signature
+        try:
+            pub_key.verify(data_signature, bytes.fromhex(transaction.public_key),
+                        algorithm=hashes.SHA256(),
+                        padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
+        except:
+            print("Failed to verify first online signature")
+            return False
+    
+        # verifying second signature
+        try:
+            data_signature = transaction.signature_parse()[1]
+            decrypted_signature = config.verifier_key.decrypt(
+                data_signature,
+                padding=padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                ))
+        except:
+            print("Failed to decrypt second signature")
+            return False
+        try:
+            pub_key.verify(decrypted_signature, bytes.fromhex(data),
+                        algorithm=hashes.SHA256(),
+                        padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
+            return True
+        except:
+            print("Failed to verify second online signature")
+            return False
+        
