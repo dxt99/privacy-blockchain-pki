@@ -63,6 +63,52 @@ paths:
             'text/plain':
               schema:
                 type: string
+  /revoke/request:
+    post:
+      summary: Requests revocation of transaction and issues challenge nonce
+      operationId: app.revoke_request
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Registration requests from the database
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
+  /revoke/challenge:
+    post:
+      summary: Submits revocation challenge
+      operationId: app.revoke_challenge
+      requestBody:
+        x-body-name: challenge
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevocationChallenge'
+      responses:
+        '200':
+          description: Registration requests from the database
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
   /admin/requests:
     get:
       summary: Gets all registration requests from the database
@@ -195,6 +241,14 @@ components:
         public_key:
           type: string
         signatures:
+          type: string
+    RevocationChallenge:
+      type: object
+      properties:
+        transaction:
+          type: object
+          $ref: '#/components/schemas/Transaction'
+        challenge_signature:
           type: string
     RegistrationRequest:
       type: object

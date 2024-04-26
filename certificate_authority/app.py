@@ -5,11 +5,13 @@ from typing import List
 from model import Transaction, RegistrationRequest, ApprovalStatus
 from chain_service import ChainService
 from registration_request_service import RegistrationRequestService
+from revocation_request_service import RevocationRequestService
 from connexion.options import SwaggerUIOptions
 
 options = SwaggerUIOptions(swagger_ui_path="/swagger")
 chain_service = ChainService()
 registration_service = RegistrationRequestService()
+revocation_service = RevocationRequestService()
 
 def register_transaction(transaction: dict):
     try:
@@ -53,7 +55,29 @@ def get_transaction(id: int):
             detail = "The requested resource was not found",
             status = 404,
         )
+        
+def revoke_request(transaction: dict):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        return revocation_service.issue_challenge(transaction)
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
 
+def revoke_challenge(challenge: dict):
+    try:
+        transaction = Transaction.from_json_string(challenge["transaction"])
+        signature = bytes.fromhex(challenge["challenge_signature"])
+        return revocation_service.try_challenge(transaction, signature)
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
 # admin
 def get_all_requests():
     return registration_service.get_all_requests()

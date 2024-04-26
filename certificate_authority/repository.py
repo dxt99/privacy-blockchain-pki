@@ -11,7 +11,7 @@ class RegistrationRepository:
         conn.commit()
         
     def __rows_to_registration_requests(self, rows):
-        return [RegistrationRequest(Transaction(row[0], row[1], row[2]), row[3], int(row[4])) for row in rows]
+        return [RegistrationRequest(Transaction(row[0], row[1], row[2]), ApprovalStatus[row[3]], int(row[4])) for row in rows]
     
     def __get_connection(self):
         try:
@@ -39,10 +39,10 @@ class RegistrationRepository:
         res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.Pending.value}'").fetchall()
         return self.__rows_to_registration_requests(res)
     
-    def get_user_request(self) -> List[RegistrationRequest]:
+    def get_revocation_request(self) -> List[RegistrationRequest]:
         conn = self.__get_connection()
         cur = conn.cursor()
-        res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.Pending.value}'").fetchall()
+        res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.RevocationRequested.value}'").fetchall()
         return self.__rows_to_registration_requests(res)
     
     def register_request(self, request: RegistrationRequest):

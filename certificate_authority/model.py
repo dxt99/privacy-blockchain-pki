@@ -28,6 +28,7 @@ class ApprovalStatus(Enum):
     Pending = "Pending"
     Approved = "Approved"
     Rejected = "Rejected"
+    RevocationRequested = "RevocationRequested"
     Revoked = "Revoked"
     
 @dataclass
