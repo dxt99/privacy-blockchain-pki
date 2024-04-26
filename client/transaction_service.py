@@ -44,12 +44,13 @@ class TransactionService:
         self.key_manager.new_key_chain()
         
         online_key = self.key_manager.base_key
-        online_signature: bytes = KeyManager.sign(online_key, self.name)
+        public_key = KeyManager.public_key_str(online_key)
+        online_signature: bytes = KeyManager.sign(online_key, bytes.fromhex(public_key))
         signatures: str = self.__serialize_signatures(online_signature)
         
         register_transaction = Transaction(
             identity = self.name,
-            public_key = KeyManager.public_key_str(online_key),
+            public_key = public_key,
             signatures = signatures
         )
         

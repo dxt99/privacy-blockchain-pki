@@ -45,8 +45,11 @@ class VerifyService:
         
         # verifying registration
         if len(transaction.identity) != 0:
+            if len(transaction.signature_parse()) != 1:
+                print("Signature count is wrong, expected one signature")
+                return False
             try:
-                pub_key.verify(data_signature, data.encode(), 
+                pub_key.verify(data_signature, bytes.fromhex(transaction.public_key), 
                                 algorithm=hashes.SHA256(),
                                 padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
                 return True
