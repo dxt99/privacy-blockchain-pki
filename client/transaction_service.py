@@ -40,6 +40,11 @@ class TransactionService:
             raise e
     
     def generate_and_register(self) -> bool:
+        if self.register_transaction != None:
+            status, _ = self.register_request_status()
+            if status != "Revoked":
+                print("Cannot generate new key when old one is not revoked yet")
+                return False
         self.register_transaction = None
         self.key_manager.new_key_chain()
         
@@ -89,15 +94,29 @@ class TransactionService:
         if self.register_transaction == None:
             return "No transaction found"
         res, id = CaService.transaction_status(self.register_transaction)
-        self.register_transaction_id = id
+        if res == 'Approved':
+            self.register_transaction_id = id
+        else:
+            self.register_transaction_id = -1
         return res
     
     def get_transactions(self) -> Dict[int, Transaction]:
+        self.register_request_status()
         if self.register_transaction_id == -1:
             return self.update_transactions
         res = {self.register_transaction_id: self.register_transaction}
         res.update(self.update_transactions)
         return res
+    
+    def revoke_key(self) -> bool:
+        status, _ = self.register_request_status()
+        if status != "Approved":
+            raise Exception("No approved key found")
+        challenge = CaService.revocation_request(self.register_transaction)
+        key = self.key_manager.base_key
+        signature = self.key_manager.sign(key, bytes.fromhex(challenge))
+        CaService.revocation_challenge(self.register_transaction, signature.hex())
+        return True
 
 if __name__ == '__main__':
     print(TransactionService.__serialize_signatures(b'a', b'bc', b'asd'))

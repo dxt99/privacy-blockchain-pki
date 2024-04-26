@@ -15,7 +15,7 @@ paths:
       operationId: app.register
       responses:
         '204':
-          description: New certificate successfully registered
+          description: New certificate successfully requested
   /update_key:
     post:
       summary: Generates new key and registers it to the CA 
@@ -23,6 +23,13 @@ paths:
       responses:
         '204':
           description: New certificate successfully registered
+  /revoke_key:
+    post:
+      summary: Requests CA to revoke registration transaction, includes requesting for challenge and answering it
+      operationId: app.revoke
+      responses:
+        '204':
+          description: Revokation successfully requested
   /get_transactions:
     get:
       summary: Gets transactions from generated keys
@@ -37,7 +44,7 @@ paths:
                 $ref: '#/components/schemas/Transactions'
   /register_status:
     get:
-      summary: Gets status of register request sent to the certificate authority
+      summary: Gets status of register transaction sent to the certificate authority
       operationId: app.status
       responses:
         '200':

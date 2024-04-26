@@ -38,6 +38,20 @@ class RegistrationRequest:
     id: int = -1
 
 @dataclass
+class RegistrationRequestDto:
+    transaction: Transaction
+    status: str
+    id: int = -1
+    
+    @staticmethod
+    def fromModel(request: RegistrationRequest):
+        return RegistrationRequestDto(
+            request.transaction,
+            request.status.value,
+            request.id
+        )
+
+@dataclass
 class SmartContractCertificate:
     def __init__(self) -> None:
         pass

@@ -31,6 +31,22 @@ def update():
         status = 400
     )
 
+def revoke():
+    try:
+        if service.revoke_key():
+            return
+        return connexion.problem(
+            title = "Bad request",
+            detail = "Failed to request key revocation",
+            status = 400
+        )
+    except Exception as e:
+        return connexion.problem(
+            title = "Bad request",
+            detail = str(e),
+            status = 400
+        )
+
 def status():
     return service.register_request_status()
 

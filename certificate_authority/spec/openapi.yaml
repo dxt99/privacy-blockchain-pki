@@ -75,7 +75,7 @@ paths:
               $ref: '#/components/schemas/Transaction'
       responses:
         '200':
-          description: Registration requests from the database
+          description: Challenge nonce, hex encoded
           content:
             'text/plain':
               schema:
@@ -98,7 +98,7 @@ paths:
               $ref: '#/components/schemas/RevocationChallenge'
       responses:
         '200':
-          description: Registration requests from the database
+          description: Challenge status
           content:
             'text/plain':
               schema:
@@ -130,6 +130,20 @@ paths:
       responses:
         '200':
           description: Pending registration requests from the database
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RegistrationRequest'
+  /admin/requests/revocation:
+    get:
+      summary: Gets all revocation requests from the database
+      operationId: app.get_revocation_requests
+      responses:
+        '200':
+          description: Pending revocation requests from the database
           content:
             'application/json':
               schema:

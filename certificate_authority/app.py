@@ -2,7 +2,7 @@ import connexion
 import config
 from pathlib import Path
 from typing import List
-from model import Transaction, RegistrationRequest, ApprovalStatus
+from model import Transaction, RegistrationRequest, ApprovalStatus, RegistrationRequestDto
 from chain_service import ChainService
 from registration_request_service import RegistrationRequestService
 from revocation_request_service import RevocationRequestService
@@ -36,6 +36,7 @@ def get_request(transaction: dict):
         )
     try:
         result = registration_service.get_request(transaction)
+        result = RegistrationRequestDto.fromModel(result)
     except:
         return connexion.problem(
             title = "NotFound",
@@ -61,6 +62,7 @@ def revoke_request(transaction: dict):
         transaction = Transaction.from_json_string(transaction)
         return revocation_service.issue_challenge(transaction)
     except Exception as e:
+        print(e)
         return connexion.problem(
             title = "BadOperation",
             detail = str(e),
@@ -71,8 +73,12 @@ def revoke_challenge(challenge: dict):
     try:
         transaction = Transaction.from_json_string(challenge["transaction"])
         signature = bytes.fromhex(challenge["challenge_signature"])
-        return revocation_service.try_challenge(transaction, signature)
+        if revocation_service.try_challenge(transaction, signature):
+            return "Success"
+        else:
+            return "Failed"
     except Exception as e:
+        print(e)
         return connexion.problem(
             title = "BadOperation",
             detail = str(e),
@@ -80,11 +86,15 @@ def revoke_challenge(challenge: dict):
         )
 # admin
 def get_all_requests():
-    return registration_service.get_all_requests()
+    return list(map(RegistrationRequestDto.fromModel, registration_service.get_all_requests()))
 
 # admin
 def get_pending_requests():
-    return registration_service.get_pending_requests()
+    return list(map(RegistrationRequestDto.fromModel, registration_service.get_pending_requests()))
+
+# admin
+def get_revocation_requests():
+    return list(map(RegistrationRequestDto.fromModel, revocation_service.get_revoke_requests()))
 
 # admin
 def approve_request(transaction: dict):
@@ -119,6 +129,7 @@ def revoke_transaction(transaction: dict):
         result = registration_service.revoke(transaction)
         return result
     except Exception as e:
+        print(e)
         return connexion.problem(
             title = "BadOperation",
             detail = str(e),

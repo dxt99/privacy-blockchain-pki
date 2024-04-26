@@ -26,3 +26,27 @@ class CaService:
             return str(payload["status"]), int(payload["id"])
         except:
             return "Failed to get status from CA"
+        
+    @staticmethod
+    def revocation_request(transaction: Transaction) -> str:
+        url = f"{config.ca_base_url}/revoke/request"
+        transaction_dict = transaction.to_dict()
+        res = requests.post(url, json = transaction_dict)
+        if res.status_code != 200:
+            print(res.text)
+            raise Exception("Failed to request revoke transaction")
+        return res.text
+    
+    @staticmethod
+    def revocation_challenge(transaction: Transaction, signature: str) -> str:
+        url = f"{config.ca_base_url}/revoke/challenge"
+        transaction_dict = transaction.to_dict()
+        payload = {
+            'challenge_signature': signature,
+            'transaction': transaction_dict
+        }
+        res = requests.post(url, json = payload)
+        if res.status_code != 200:
+            print(res.text)
+            raise Exception("Failed to request revoke transaction")
+        return res.text
