@@ -44,10 +44,8 @@ class TransactionService:
         self.key_manager.new_key_chain()
         
         online_key = self.key_manager.base_key
-        master_key = self.key_manager.master_key
         online_signature: bytes = KeyManager.sign(online_key, self.name)
-        master_signature: bytes = KeyManager.sign(master_key, self.name)
-        signatures: str = self.__serialize_signatures(online_signature, master_signature)
+        signatures: str = self.__serialize_signatures(online_signature)
         
         register_transaction = Transaction(
             identity = self.name,

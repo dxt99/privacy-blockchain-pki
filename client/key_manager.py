@@ -5,7 +5,6 @@ from typing import List
 class KeyManager:
     public_key_exponent: int = 0x10001
     key_size: int = 2048
-    master_key: rsa.RSAPrivateKey
     base_key: rsa.RSAPrivateKey
     online_keys: List[rsa.RSAPrivateKey]
     
@@ -42,7 +41,6 @@ class KeyManager:
             )
     
     def new_key_chain(self):
-        self.master_key = self.__gen_generic_key()
         self.base_key = self.__gen_generic_key()
         self.online_keys = []
         
