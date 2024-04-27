@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
 class RevocationRequestService:
-    challenges: Dict[Transaction, bytes]
+    challenges: Dict[str, bytes]
     
     def __init__(self):
         self.__repository = RegistrationRepository()
