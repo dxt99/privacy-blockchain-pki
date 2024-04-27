@@ -6,16 +6,24 @@ from model import Transaction, RegistrationRequest, ApprovalStatus, Registration
 from chain_service import ChainService
 from registration_request_service import RegistrationRequestService
 from revocation_request_service import RevocationRequestService
+from validate_service import ValidateService
 from connexion.options import SwaggerUIOptions
 
 options = SwaggerUIOptions(swagger_ui_path="/swagger")
 chain_service = ChainService()
 registration_service = RegistrationRequestService()
 revocation_service = RevocationRequestService()
+validation_service = ValidateService()
 
 def register_transaction(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         result = registration_service.register_request(RegistrationRequest(transaction, ApprovalStatus.Pending))
         return result
     except Exception as e:
@@ -28,6 +36,12 @@ def register_transaction(transaction: dict):
 def get_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
     except Exception as e:
         return connexion.problem(
             title = "BadOperation",
@@ -60,6 +74,12 @@ def get_transaction(id: int):
 def revoke_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         return revocation_service.issue_challenge(transaction)
     except Exception as e:
         print(e)
@@ -72,6 +92,12 @@ def revoke_request(transaction: dict):
 def revoke_challenge(challenge: dict):
     try:
         transaction = Transaction.from_json_string(challenge["transaction"])
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         signature = bytes.fromhex(challenge["challenge_signature"])
         if revocation_service.try_challenge(transaction, signature):
             return "Success"
@@ -100,6 +126,12 @@ def get_revocation_requests():
 def approve_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         result = registration_service.approve(transaction)
         return result
     except Exception as e:
@@ -113,6 +145,12 @@ def approve_request(transaction: dict):
 def reject_request(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         result = registration_service.reject(transaction)
         return result
     except Exception as e:
@@ -126,6 +164,12 @@ def reject_request(transaction: dict):
 def revoke_transaction(transaction: dict):
     try:
         transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
         result = registration_service.revoke(transaction)
         return result
     except Exception as e:

@@ -1,13 +1,12 @@
 import datetime
-import json
 from dataclasses import dataclass
 from enum import Enum
+from typing import List
 from cryptography import x509
 from cryptography.x509 import Certificate as X509Certificate
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives.serialization import Encoding
 
 one_day = datetime.timedelta(1, 0, 0)
 
@@ -16,6 +15,10 @@ class Transaction:
     identity: str
     public_key: str
     signatures: str
+    
+    def signature_parse(self) -> List[bytes]:
+        signature_strs = self.signatures.lstrip("(").rstrip(")").split(",")
+        return list(map(bytes.fromhex, signature_strs))
     
     @staticmethod
     def from_json_string(transaction_json):

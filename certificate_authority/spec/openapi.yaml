@@ -199,7 +199,7 @@ paths:
                 type: string
   /admin/revoke:
     post:
-      summary: Revokes approved transaction, sends a revoked transaction to the blockchain
+      summary: Revokes approved transaction, which already passes challenge, sends a revoked transaction to the blockchain
       operationId: app.revoke_transaction
       requestBody:
         x-body-name: transaction
