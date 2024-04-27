@@ -2,6 +2,7 @@ import connexion
 import config
 import requests
 from pathlib import Path
+from model import Transaction
 from connexion.options import SwaggerUIOptions
 from transaction_service import TransactionService
 
@@ -11,25 +12,34 @@ def hello():
     return "hello"
 
 def register():
-    if service.generate_and_register():
-       return
-    return connexion.problem(
-        title = "Bad request",
-        detail = "One of the required services is not ready",
-        status = 400
-    )
+    try:
+        service.generate_and_register()
+    except Exception as e:
+        return connexion.problem(
+            title = "Bad request",
+            detail = str(e),
+            status = 400
+        )
     
 def get_transactions():
     return service.get_transactions()
     
-def update():
-    if service.update_key():
-        return
-    return connexion.problem(
-        title = "Bad request",
-        detail = "Cannot update key",
-        status = 400
-    )
+def update(destination_key: bytes | dict):
+    try:
+        print(type(destination_key))
+        if type(destination_key) == bytes: destination_key = destination_key.decode().strip()
+        if type(destination_key) == dict: destination_key = ""
+        return service.update_key(destination_key)
+    except Exception as e:
+        return connexion.problem(
+            title = "Bad request",
+            detail = str(e),
+            status = 400
+        )
+
+def verify(transactions: dict):
+    obj = Transaction.parse_transaction_list(transactions)
+    return str(service.verify(obj))
 
 def revoke():
     try:

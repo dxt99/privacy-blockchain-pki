@@ -18,11 +18,24 @@ paths:
           description: New certificate successfully requested
   /update_key:
     post:
-      summary: Generates new key and registers it to the CA 
+      summary: Updates key and registers it to the CA. By default, signature is encrypted using public key provided (hex encoded), or default verifier key
       operationId: app.update
+      requestBody:
+        description: Encryption key (PEM Public Key) for signature, otherwise uses default verifier key
+        x-body-name: destination_key
+        required: false
+        content:
+          'text/plain':
+            schema:
+              type: 
+                string
       responses:
-        '204':
-          description: New certificate successfully registered
+        '200':
+          description: Transaction list representing the updated key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transactions'
   /revoke_key:
     post:
       summary: Requests CA to revoke registration transaction, includes requesting for challenge and answering it
@@ -30,6 +43,23 @@ paths:
       responses:
         '204':
           description: Revokation successfully requested
+  /validate:
+    post:
+      summary: Validates transactions and returns current public key
+      operationId: app.verify
+      requestBody:
+        x-body-name: transactions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transactions'
+      responses:
+        '200':
+          description: Certificate status
+          content:
+            'text/plain':
+              schema:
+                type: boolean
   /get_transactions:
     get:
       summary: Gets transactions from generated keys

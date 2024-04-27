@@ -2,6 +2,7 @@ import config
 from key_manager import KeyManager
 from ca_service import CaService
 from chain_service import ChainService
+from verify_service import VerifyService
 from model import Transaction
 from typing import Dict
 from cryptography.hazmat.primitives import serialization
@@ -21,6 +22,7 @@ class TransactionService:
         self.name = config.client_common_name
         self.key_manager = KeyManager()
         self.chain_service = ChainService()
+        self.verifying_service = VerifyService()
         self.register_transaction = None
         self.register_transaction_id = -1
         self.update_transactions = {}
@@ -39,12 +41,11 @@ class TransactionService:
             print("Failed to parse verifier public key")
             raise e
     
-    def generate_and_register(self) -> bool:
+    def generate_and_register(self):
         if self.register_transaction != None:
             status, _ = self.register_request_status()
             if status != "Revoked":
-                print("Cannot generate new key when old one is not revoked yet")
-                return False
+                raise Exception("Cannot generate new key when old one is not revoked yet")
         self.register_transaction = None
         self.key_manager.new_key_chain()
         
@@ -59,25 +60,31 @@ class TransactionService:
             signatures = signatures
         )
         
-        res = CaService.register_transaction(register_transaction)
-        if res: self.register_transaction = register_transaction
-        return res
+        CaService.register_transaction(register_transaction)
+        self.register_transaction = register_transaction
     
-    def update_key(self) -> bool:
+    def update_key(self, pub_key_str: str = "") -> Dict[int, Transaction]:
         self.__get_verifier_key()
         if self.register_request_status() != "Approved":
-            print("Cannot update key, registration not approved yet")
-            return False
+            raise Exception("Cannot update key, registration not approved yet")
         if not self.register_transaction:
-            print("Cannnot udpate key, no registration found")
-            return False
+            raise Exception("Cannnot udpate key, no registration found")
         
         new_key = self.key_manager.add_key_to_chain()
         public_key = KeyManager.public_key_str(new_key)
         prev_data = bytes.fromhex(self.register_transaction.public_key)
         
         previous_signature: bytes = KeyManager.sign(new_key, prev_data)
-        encrypted_signature: bytes = KeyManager.encrypt(self.verifier_key, previous_signature)
+        encryption_key = self.verifier_key
+        if len(pub_key_str) > 0:
+            try:
+                encryption_key = serialization.load_pem_public_key(bytes.fromhex(pub_key_str))
+            except:
+                raise Exception(f"Failed to deserialize encryption key {pub_key_str}")
+        try:
+            encrypted_signature: bytes = KeyManager.encrypt(encryption_key, previous_signature)
+        except:
+            raise Exception("Failed to encrypt signature, key size is too small")
         online_signature: bytes = KeyManager.sign(new_key, bytes.fromhex(public_key))
         
         signatures: str = self.__serialize_signatures(online_signature, encrypted_signature)
@@ -88,7 +95,10 @@ class TransactionService:
         )
         id = self.chain_service.update(update_transaction)
         self.update_transactions[id] = update_transaction
-        return True
+        return {
+            self.register_transaction_id: self.register_transaction,
+            id: update_transaction
+        }
     
     def register_request_status(self) -> str:
         if self.register_transaction == None:
@@ -117,6 +127,9 @@ class TransactionService:
         signature = self.key_manager.sign(key, bytes.fromhex(challenge))
         CaService.revocation_challenge(self.register_transaction, signature.hex())
         return True
+    
+    def verify(self, transactions: dict) -> bool:
+        return self.verifying_service.verify(transactions, self.key_manager.base_key)
 
 if __name__ == '__main__':
     print(TransactionService.__serialize_signatures(b'a', b'bc', b'asd'))
