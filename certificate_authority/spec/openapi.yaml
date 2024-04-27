@@ -109,6 +109,29 @@ paths:
             'text/plain':
               schema:
                 type: string
+  /x509/certificate:
+    post:
+      summary: Requests serialization of certificate
+      operationId: app.x509_serialize
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Certificate file
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
   /admin/requests:
     get:
       summary: Gets all registration requests from the database

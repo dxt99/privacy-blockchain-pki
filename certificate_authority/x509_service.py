@@ -12,9 +12,9 @@ from cryptography.x509.oid import NameOID
 class X509Service:
     def __init__(self):
         self.__repository = RegistrationRepository()
-        self.__certs: Dict[str, X509Certificate] = {}
+        self.__certs: Dict[int, X509Certificate] = {}
         
-    def get_x509cert(self, transaction: Transaction):
+    def get_x509cert(self, transaction: Transaction) -> bytes:
         results = self.__repository.get_request(transaction)
         if len(results) != 1:
             raise Exception(f"Transaction not found")
@@ -22,8 +22,12 @@ class X509Service:
         if request.status != ApprovalStatus.Approved:
             raise Exception(f"Transaction is in {request.status.value} status, not in approved status")
         
-        if transaction.public_key in self.__certs:
-            return self.__certs[transaction.public_key]
+        if request.id in self.__certs:
+            return CertificateMapper.x509_to_bytes(self.__certs[request.id])
+        
+        cert = CertificateMapper.to_x509(transaction, request.id)
+        self.__certs[request.id] = cert
+        return CertificateMapper.x509_to_bytes(cert)
 
 
 one_day = datetime.timedelta(1, 0, 0)
@@ -67,7 +71,7 @@ class CertificateMapper:
         return certificate.public_bytes(encoding=serialization.Encoding.PEM)
     
     @staticmethod
-    def byets_to_x509(payload: bytes) -> X509Certificate:
+    def bytes_to_x509(payload: bytes) -> X509Certificate:
         return x509.load_pem_x509_certificate(payload)
     
     @staticmethod

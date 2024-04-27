@@ -7,6 +7,7 @@ from chain_service import ChainService
 from registration_request_service import RegistrationRequestService
 from revocation_request_service import RevocationRequestService
 from validate_service import ValidateService
+from x509_service import X509Service
 from connexion.options import SwaggerUIOptions
 
 options = SwaggerUIOptions(swagger_ui_path="/swagger")
@@ -14,6 +15,7 @@ chain_service = ChainService()
 registration_service = RegistrationRequestService()
 revocation_service = RevocationRequestService()
 validation_service = ValidateService()
+x509_service = X509Service()
 
 def register_transaction(transaction: dict):
     try:
@@ -110,6 +112,25 @@ def revoke_challenge(challenge: dict):
             detail = str(e),
             status = 400,
         )
+        
+def x509_serialize(transaction: dict):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
+        result = x509_service.get_x509cert(transaction)
+        return result.decode()
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+
 # admin
 def get_all_requests():
     return list(map(RegistrationRequestDto.fromModel, registration_service.get_all_requests()))

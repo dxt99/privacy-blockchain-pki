@@ -9,7 +9,8 @@ class KeyManager:
     online_keys: List[rsa.RSAPrivateKey]
     
     def __init__(self):
-        pass
+        self.base_key = None
+        self.online_keys = []
     
     def __gen_generic_key(self, is_small = False):
         return rsa.generate_private_key(self.public_key_exponent,  self.key_size // (2 if is_small else 1))

@@ -20,7 +20,7 @@ class RegistrationRequestService:
         RegistrationRequestService.initialized = True
         pub_key = config.verifier_key.public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.PKCS1).hex()
         signature = config.verifier_key.sign(
-            b'verifier_service', 
+            bytes.fromhex(pub_key), 
             padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH),
             hashes.SHA256()
             )
