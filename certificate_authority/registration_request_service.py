@@ -50,7 +50,7 @@ class RegistrationRequestService:
             raise Exception(f"Signatures stored in the database is different.")
         new_id = self.__chain_service.register(transaction)
         new_request = RegistrationRequest(transaction, ApprovalStatus.Approved, new_id)
-        self.__repository.update_rqeuest(new_request)
+        self.__repository.update_request(new_request)
         
         return "Success"
     
@@ -65,7 +65,7 @@ class RegistrationRequestService:
         if target_request.transaction.signatures != transaction.signatures:
             raise Exception(f"Signatures stored in the database is different.")
         new_request = RegistrationRequest(transaction, ApprovalStatus.Rejected, -1)
-        self.__repository.update_rqeuest(new_request)
+        self.__repository.update_request(new_request)
         
         return "Success"
     
@@ -76,7 +76,7 @@ class RegistrationRequestService:
         target_request = results[0]
         new_request = RegistrationRequest(transaction, ApprovalStatus.Revoked, target_request.id)
         self.__chain_service.revoke(target_request.id)
-        self.__repository.update_rqeuest(new_request)
+        self.__repository.update_request(new_request)
         
         return "Success"
     

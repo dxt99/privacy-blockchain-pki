@@ -20,7 +20,7 @@ class RegistrationRepository:
         except Exception as e:
             print("Failed to get sqlite db connection")
             
-    def update_rqeuest(self, request: RegistrationRequest):
+    def update_request(self, request: RegistrationRequest):
         conn = self.__get_connection()
         cur = conn.cursor()
         cur.execute(f"UPDATE registrations set approval_status = '{request.status.value}', id = '{request.id}' WHERE identity = ? AND public_key = ? AND signatures = ?",

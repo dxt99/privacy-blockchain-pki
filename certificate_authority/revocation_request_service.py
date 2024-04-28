@@ -41,11 +41,23 @@ class RevocationRequestService:
                         algorithm=hashes.SHA256(),
                         padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
             request.status = ApprovalStatus.RevocationRequested
-            self.__repository.update_rqeuest(request)
+            self.__repository.update_request(request)
             return True
         except Exception as e:
             print(e)
             return False
+        
+    def reject_revocation(self, transaction: Transaction):
+        results = self.__repository.get_request(transaction)
+        if len(results) != 1:
+            raise Exception(f"Transaction not found")
+        request: RegistrationRequest = results[0]
+        status = request.status
+        if status != ApprovalStatus.RevocationRequested:
+            raise Exception(f"Transaction is in {status.value}, expected status is {ApprovalStatus.RevocationRequested.value}")
+        request.status = ApprovalStatus.Approved
+        self.__repository.update_request(request)
+        return "Success"
         
     def get_revoke_requests(self) -> List[RegistrationRequest]:
         return self.__repository.get_revocation_request()

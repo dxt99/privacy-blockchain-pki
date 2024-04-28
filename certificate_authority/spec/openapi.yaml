@@ -231,6 +231,29 @@ paths:
             'text/plain':
               schema:
                 type: string
+  /admin/revoke/reject:
+    post:
+      summary: Rejects revocation request
+      operationId: app.revoke_reject
+      requestBody:
+        x-body-name: transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Rejection status
+          content:
+            'text/plain':
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
   /admin/revoke:
     post:
       summary: Revokes approved transaction, which already passes challenge, sends a revoked transaction to the blockchain

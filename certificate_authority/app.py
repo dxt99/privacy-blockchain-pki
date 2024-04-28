@@ -185,7 +185,26 @@ def reject_request(transaction: dict):
             detail = str(e),
             status = 400,
         )
-        
+          
+# admin
+def revoke_reject(transaction: dict):
+    try:
+        transaction = Transaction.from_json_string(transaction)
+        if not validation_service.validate(transaction):
+            return connexion.problem(
+                title = "BadOperation",
+                detail = "Transaction is invalid. Make sure that identity is present, public key is generated correctly, and siganture is signed properly",
+                status = 400,
+            )
+        result = revocation_service.reject_revocation(transaction)
+        return result
+    except Exception as e:
+        return connexion.problem(
+            title = "BadOperation",
+            detail = str(e),
+            status = 400,
+        )
+    
 # admin
 def revoke_transaction(transaction: dict):
     try:
