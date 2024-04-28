@@ -102,6 +102,7 @@ def revoke_challenge(challenge: dict):
             )
         signature = bytes.fromhex(challenge["challenge_signature"])
         if revocation_service.try_challenge(transaction, signature):
+            x509_service.revoke_timestamp(transaction)
             return "Success"
         else:
             return "Failed"
@@ -130,6 +131,10 @@ def x509_serialize(transaction: dict):
             detail = str(e),
             status = 400,
         )
+        
+def x509_crl():
+    result = x509_service.get_crl()
+    return result.decode()
 
 # admin
 def get_all_requests():

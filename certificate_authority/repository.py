@@ -45,6 +45,12 @@ class RegistrationRepository:
         res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.RevocationRequested.value}'").fetchall()
         return self.__rows_to_registration_requests(res)
     
+    def get_revoked(self) -> List[RegistrationRequest]:
+        conn = self.__get_connection()
+        cur = conn.cursor()
+        res = cur.execute(f"SELECT * FROM registrations WHERE approval_status = '{ApprovalStatus.Revoked.value}'").fetchall()
+        return self.__rows_to_registration_requests(res)
+    
     def register_request(self, request: RegistrationRequest):
         conn = self.__get_connection()
         cur = conn.cursor()

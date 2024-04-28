@@ -43,7 +43,7 @@ class TransactionService:
     
     def generate_and_register(self):
         if self.register_transaction != None:
-            status, _ = self.register_request_status()
+            status = self.register_request_status()
             if status != "Revoked":
                 raise Exception("Cannot generate new key when old one is not revoked yet")
         self.register_transaction = None
@@ -119,7 +119,7 @@ class TransactionService:
         return res
     
     def revoke_key(self) -> bool:
-        status, _ = self.register_request_status()
+        status = self.register_request_status()
         if status != "Approved":
             raise Exception("No approved key found")
         challenge = CaService.revocation_request(self.register_transaction)

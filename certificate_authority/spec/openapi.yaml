@@ -111,7 +111,7 @@ paths:
                 type: string
   /x509/certificate:
     post:
-      summary: Requests serialization of certificate
+      summary: Requests serialization of certificate. Signs a new one on first request.
       operationId: app.x509_serialize
       requestBody:
         x-body-name: transaction
@@ -128,6 +128,17 @@ paths:
                 type: string
         '400':
           description: Bad request
+          content:
+            'text/plain':
+              schema:
+                type: string
+  /x509/crl:
+    get:
+      summary: Requests serialization of certificate
+      operationId: app.x509_crl
+      responses:
+        '200':
+          description: Certificate file
           content:
             'text/plain':
               schema:
