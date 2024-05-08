@@ -10,7 +10,7 @@ client_port = int(os.environ['port']) if 'port' in os.environ else 8090
 
 # Certificate settings
 client_common_name = os.environ['common_name'] if 'common_name' in os.environ else f"client{client_port}.com"
-verifier_tx_id = 0
+verifier_tx_id = 1
 
 # CA smart contract
 @dataclass

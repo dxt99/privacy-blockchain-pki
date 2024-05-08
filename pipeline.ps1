@@ -94,6 +94,12 @@ if ([System.IO.File]::Exists("verifier/config/account.json")){
 } else {
     PrintError "ERROR: Verifier account config not found"
 }
+Write-Host "Checking CA key"
+if ([System.IO.File]::Exists("certificate_authority/config/key.pem")){
+    PrintSuccess "CA private key found"
+} else {
+    PrintErrror "ERROR: CA private key not found"
+}
 Write-Host "Checking verifier keys"
 if ([System.IO.File]::Exists("verifier/config/verifier_key/key.pem")){
     PrintSuccess "Verifier private key found"

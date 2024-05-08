@@ -9,10 +9,7 @@ from cryptography.hazmat.primitives import serialization
 flask_host = os.environ['host'] if 'host' in os.environ else '127.0.0.1'
 
 # CA private key, this will we stored later
-private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=2048,
-)
+private_key =  serialization.load_pem_private_key(open("config/key.pem", "rb").read(), password=None)
 
 # DB file
 sqlite_db_file = "db/certificate_authority.db"

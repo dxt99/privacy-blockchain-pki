@@ -9,9 +9,9 @@ servers:
 - url: http://localhost:8100
 
 paths:
-  /validate:
+  /verify:
     post:
-      summary: Validates transactions and returns current public key
+      summary: Validates and verifies transactions and returns current public key
       operationId: app.verify
       requestBody:
         x-body-name: transactions

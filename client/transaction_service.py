@@ -44,7 +44,7 @@ class TransactionService:
     def generate_and_register(self):
         if self.register_transaction != None:
             status = self.register_request_status()
-            if status != "Revoked":
+            if status == "Accepted":
                 raise Exception("Cannot generate new key when old one is not revoked yet")
         self.register_transaction = None
         self.key_manager.new_key_chain()
