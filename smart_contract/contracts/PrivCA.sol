@@ -12,7 +12,6 @@ contract PrivCA is Owned {
 	mapping (uint => bool) private revocations;
 
 	struct Transaction {
-		string operation;
 		string identity;
         string publicKey;
 		string signatures;
@@ -24,7 +23,7 @@ contract PrivCA is Owned {
 
 	// CA validates identity and verifies registration, then calls register
 	function register(string memory domain, string memory publicKey, string memory signatures) public onlyOwner returns(uint){
-		Transaction memory tr = Transaction("register", domain, publicKey, signatures);
+		Transaction memory tr = Transaction(domain, publicKey, signatures);
 		transactions.push(tr);
 
 		return transactions.length - 1;
@@ -33,7 +32,7 @@ contract PrivCA is Owned {
 	// Anyone can post updates, this will be used in certificate verification
 	function update(string memory publicKey, string memory signatures) public returns(uint){
 		// add more pushed info later
-		Transaction memory tr = Transaction("update", "", publicKey, signatures);
+		Transaction memory tr = Transaction("", publicKey, signatures);
 		transactions.push(tr);
 
 		return transactions.length - 1;

@@ -31,7 +31,7 @@ contract('PrivCA', (accounts) => {
 
   it('should return proper transaction', async() => {
     const tr = await privCaInstance.get.call(activeTransactionId);
-    assert.equal(tr.operation, "register");
+    assert.equal(tr.identity, "www.secondone.com");
   });
 
   it('should revoke existing transaction', async () => {
