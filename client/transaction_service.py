@@ -72,9 +72,9 @@ class TransactionService:
         
         new_key = self.key_manager.add_key_to_chain()
         public_key = KeyManager.public_key_str(new_key)
-        prev_data = bytes.fromhex(self.register_transaction.public_key)
+        prev_key = self.key_manager.base_key
         
-        previous_signature: bytes = KeyManager.sign(new_key, prev_data)
+        previous_signature: bytes = KeyManager.sign(prev_key, bytes.fromhex(public_key))
         encryption_key = self.verifier_key
         if len(pub_key_str) > 0:
             try:

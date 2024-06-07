@@ -27,7 +27,7 @@ class VerifyService:
             previous_key = transaction.public_key
         return res
     
-    def __verify_single(self, id: int, transaction: Transaction, data: str, verifying_key: rsa.RSAPublicKey = None) -> bool:
+    def __verify_single(self, id: int, transaction: Transaction, previous_key: str, verifying_key: rsa.RSAPublicKey = None) -> bool:
         if self.chain.is_revoked(id):
             return False
         chain_tx = self.chain.get_transaction(id)
@@ -64,6 +64,14 @@ class VerifyService:
         if not verifying_key:
             print("Verifying key must be supplied for signature decryption")
             return False
+        
+        # parsing prev pub key
+        try: 
+            previous_pub_key = serialization.load_pem_public_key(bytes.fromhex(previous_key))
+        except:
+            print("Failed to parse previous public key")
+            return False
+        
         # verifying first signature
         try:
             pub_key.verify(data_signature, bytes.fromhex(transaction.public_key),
@@ -87,7 +95,7 @@ class VerifyService:
             print("Failed to decrypt second signature")
             return False
         try:
-            pub_key.verify(decrypted_signature, bytes.fromhex(data),
+            previous_pub_key.verify(decrypted_signature, bytes.fromhex(transaction.public_key),
                         algorithm=hashes.SHA256(),
                         padding=padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH))
             return True
