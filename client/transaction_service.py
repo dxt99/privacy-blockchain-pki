@@ -84,7 +84,7 @@ class TransactionService:
         try:
             encrypted_signature: bytes = KeyManager.encrypt(encryption_key, previous_signature)
         except:
-            raise Exception("Failed to encrypt signature, key size is too small")
+            raise Exception(f"Failed to encrypt signature, key size is too small, {encryption_key.key_size} bits vs {len(previous_signature)} bytes")
         online_signature: bytes = KeyManager.sign(new_key, bytes.fromhex(public_key))
         
         signatures: str = self.__serialize_signatures(online_signature, encrypted_signature)
